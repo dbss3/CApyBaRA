@@ -1,4 +1,5 @@
 import numpy as np
+from 2DCARMA_readin import load_txt_file
 
 ########################################################
 # Functions to do setup of the arrays
@@ -43,6 +44,40 @@ def setup_arrays_2D(nbin,ngroup):
 
 	return r_array , ms_array, dr_array, rl_array, ru_array
 
+def setup_dicts_4D(nz,nbin,ilong,ntime,group_name_list_file_loc):
+	# Setup 4D arrays for pressure, particle size, long, and time
+	temporal_global_cloud_array_4D = np.zeros((nz,nbin,ilong,ntime))
+	
+    # Open the group names file as a list to go through for dict keys
+	group_name_list = load_txt_file(group_name_list_file_loc)
+	
+	temporal_global_cloud_dict = {}
+	for g, group_name in enumerate(group_name_list): #See hardcoding at the top
+		temporal_global_cloud_dict[group_name] = np.copy(temporal_global_cloud_array_4D)
+
+	return temporal_global_cloud_dict
+
+def setup_dicts_3D(nz,ilong,ntime,chemical_element_list_file_loc):
+	# Setup 3D arrays for pressure, longitude, time
+	temporal_global_array_3D = np.zeros(((nz,ilong,ntime)))
+	
+    # Open the group names file as a list to go through for dict keys
+	chemical_element_list = load_txt_file(chemical_element_list_file_loc)
+
+	#believe these are for the mass mixing ratios of the gases, and the species vapour pressure
+	mmr_chemical_element_dict = {}
+	svp_chemical_element_dict = {}
+	for c, chemical_element in enumerate(chemical_element_list): #Also see hard coding at top
+		mmr_chemical_element_dict[chemical_element] = np.copy(temporal_global_array_3D)
+		svp_chemical_element_dict[chemical_element] = np.copy(temporal_global_array_3D)
+
+	return mmr_chemical_element_dict, svp_chemical_element_dict
+
+'''
+#######################################################################
+# Ok, this is pissing me off, so I'mma just hide these at the bottom
+# Also need to rename the functions anyway
+
 def setup_dict_4D_and_time_averaged_dict_3D(nz,nbin,ilong,ntime):
 	# Setup 4D arrays for pressure, particle size, long, and time
 	temporal_global_cloud_array_4D = np.zeros((nz,nbin,ilong,ntime))
@@ -51,7 +86,7 @@ def setup_dict_4D_and_time_averaged_dict_3D(nz,nbin,ilong,ntime):
 	for g, group_name in enumerate(group_name_list): #See hardcoding at the top
 		temporal_global_cloud_dict[group_name] = np.copy(temporal_global_cloud_array_4D)
 		
-    '''
+    
 	# Getting rid of time-averaging here, as I don't think its needed
 	# But keeping the code until I've tested this.
 	# Now lets setup a dictionary for time-averaged 3D arrays of the above:
@@ -60,7 +95,7 @@ def setup_dict_4D_and_time_averaged_dict_3D(nz,nbin,ilong,ntime):
 	time_averaged_global_cloud_dict = {}
 	for g, group_name in enumerate(group_name_list):
 		time_averaged_global_cloud_dict[group_name] = np.copy(time_averaged_global_cloud_array_3D)
-    '''
+    
 
 	return temporal_global_cloud_dict #, time_averaged_global_cloud_dict
 
@@ -75,7 +110,7 @@ def setup_dict_3D_and_time_averaged_dict_2D(nz,ilong,ntime):
 		mmr_chemical_element_dict[chemical_element] = np.copy(temporal_global_array_3D)
 		svp_chemical_element_dict[chemical_element] = np.copy(temporal_global_array_3D)
 
-	'''
+	
 	# Getting rid of time-averaging here, as I don't think its needed
 	# But keeping the code until I've tested this.
 	# Now lets setup a dictionary for time-averaged 2D arrays of the above:
@@ -86,6 +121,7 @@ def setup_dict_3D_and_time_averaged_dict_2D(nz,ilong,ntime):
 	for c, chemical_element in enumerate(chemical_element_list):
 		time_averaged_mmr_chemical_element_dict[chemical_element] = np.copy(time_averaged_chemical_element_array_2D)
 		time_averaged_svp_chemical_element_dict[chemical_element] = np.copy(time_averaged_chemical_element_array_2D)
-		'''
+		
 
 	return mmr_chemical_element_dict, svp_chemical_element_dict #, time_averaged_mmr_chemical_element_dict, time_averaged_svp_chemical_element_dict
+'''

@@ -1,7 +1,33 @@
 import numpy as np
+from array_setup_routines import setup_arrays_1D, setup_arrays_2D,setup_dicts_3D,setup_dicts_4D
 
 ########################################################
 # Functions to do the actual read in of the files
+
+def load_txt_file(file_name):
+    """
+    Reads a text file and returns a list of strings from each line,
+    ignoring lines that start with '#'.
+	# Generated using CHAT GPT
+    
+    Parameters:
+        file_name (str): The name of the text file to read.
+    
+    Returns:
+        list: A list of strings for each line not starting with '#'.
+    """
+    result = []
+    try:
+        with open(file_name, 'r') as file:
+            for line in file:
+                stripped_line = line.strip()
+                if not stripped_line.startswith("#"):
+                    result.append(stripped_line)
+    except FileNotFoundError:
+        print(f"Error: The file {file_name} was not found.")
+    return result
+
+
 def read_in(file_loc,longitudes_loc):
 	# For now I need the to read in the longitudes seperately to get 
 	# the number of longitudes, I will be adding this to 2DCARMA output
@@ -41,8 +67,8 @@ def read_in(file_loc,longitudes_loc):
 	pressure_array, temperature_array, height_array, time_array, distance_array, rotation_array, longitude_count_array = setup_arrays_1D(nz,ntime,ilong)
 	r_array , ms_array, dr_array, rl_array, ru_array = setup_arrays_2D(nbin,ngroup)
 	#p_chemical_element_dict, pm_chemical_element_dict = setup_dict_2D(nz, nbin)
-	temporal_global_cloud_dict, time_averaged_global_cloud_dict = setup_dict_4D_and_time_averaged_dict_3D(nz,nbin,ilong,ntime)
-	mmr_chemical_element_dict, svp_chemical_element_dict, time_averaged_mmr_chemical_element_dict, time_averaged_svp_chemical_element_dict = setup_dict_3D_and_time_averaged_dict_2D(nz,ilong,ntime)
+	temporal_global_cloud_dict = setup_dicts_4D(nz,nbin,ilong,ntime,group_name_list_file_loc)
+	mmr_chemical_element_dict, svp_chemical_element_dict = setup_dicts_3D(nz,ilong,ntime,chemical_element_list_file_loc)
 
 	print('arrays set up')
 
