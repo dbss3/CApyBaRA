@@ -45,21 +45,24 @@ def setup_arrays_2D(nbin,ngroup):
 
 def setup_dict_4D_and_time_averaged_dict_3D(nz,nbin,ilong,ntime):
 	# Setup 4D arrays for pressure, particle size, long, and time
-
 	temporal_global_cloud_array_4D = np.zeros((nz,nbin,ilong,ntime))
 	
 	temporal_global_cloud_dict = {}
 	for g, group_name in enumerate(group_name_list): #See hardcoding at the top
 		temporal_global_cloud_dict[group_name] = np.copy(temporal_global_cloud_array_4D)
-
+		
+    '''
+	# Getting rid of time-averaging here, as I don't think its needed
+	# But keeping the code until I've tested this.
 	# Now lets setup a dictionary for time-averaged 3D arrays of the above:
 	time_averaged_global_cloud_array_3D = np.zeros((nz,nbin,ilong))
 
 	time_averaged_global_cloud_dict = {}
 	for g, group_name in enumerate(group_name_list):
 		time_averaged_global_cloud_dict[group_name] = np.copy(time_averaged_global_cloud_array_3D)
+    '''
 
-	return temporal_global_cloud_dict, time_averaged_global_cloud_dict
+	return temporal_global_cloud_dict #, time_averaged_global_cloud_dict
 
 def setup_dict_3D_and_time_averaged_dict_2D(nz,ilong,ntime):
 	# Setup 3D arrays for pressure, longitude, time
@@ -72,6 +75,9 @@ def setup_dict_3D_and_time_averaged_dict_2D(nz,ilong,ntime):
 		mmr_chemical_element_dict[chemical_element] = np.copy(temporal_global_array_3D)
 		svp_chemical_element_dict[chemical_element] = np.copy(temporal_global_array_3D)
 
+	'''
+	# Getting rid of time-averaging here, as I don't think its needed
+	# But keeping the code until I've tested this.
 	# Now lets setup a dictionary for time-averaged 2D arrays of the above:
 	time_averaged_chemical_element_array_2D = np.zeros((nz,ilong))
 
@@ -80,5 +86,6 @@ def setup_dict_3D_and_time_averaged_dict_2D(nz,ilong,ntime):
 	for c, chemical_element in enumerate(chemical_element_list):
 		time_averaged_mmr_chemical_element_dict[chemical_element] = np.copy(time_averaged_chemical_element_array_2D)
 		time_averaged_svp_chemical_element_dict[chemical_element] = np.copy(time_averaged_chemical_element_array_2D)
+		'''
 
-	return mmr_chemical_element_dict, svp_chemical_element_dict, time_averaged_mmr_chemical_element_dict, time_averaged_svp_chemical_element_dict
+	return mmr_chemical_element_dict, svp_chemical_element_dict #, time_averaged_mmr_chemical_element_dict, time_averaged_svp_chemical_element_dict
