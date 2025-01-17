@@ -1,5 +1,4 @@
 import numpy as np
-from 2DCARMA_readin import load_txt_file
 
 ########################################################
 # Functions to do setup of the arrays
@@ -44,12 +43,9 @@ def setup_arrays_2D(nbin,ngroup):
 
 	return r_array , ms_array, dr_array, rl_array, ru_array
 
-def setup_dicts_4D(nz,nbin,ilong,ntime,group_name_list_file_loc):
+def setup_dicts_4D(nz,nbin,ilong,ntime,group_name_list):
 	# Setup 4D arrays for pressure, particle size, long, and time
 	temporal_global_cloud_array_4D = np.zeros((nz,nbin,ilong,ntime))
-	
-    # Open the group names file as a list to go through for dict keys
-	group_name_list = load_txt_file(group_name_list_file_loc)
 	
 	temporal_global_cloud_dict = {}
 	for g, group_name in enumerate(group_name_list): #See hardcoding at the top
@@ -57,12 +53,9 @@ def setup_dicts_4D(nz,nbin,ilong,ntime,group_name_list_file_loc):
 
 	return temporal_global_cloud_dict
 
-def setup_dicts_3D(nz,ilong,ntime,chemical_element_list_file_loc):
+def setup_dicts_3D(nz,ilong,ntime,chemical_element_list):
 	# Setup 3D arrays for pressure, longitude, time
 	temporal_global_array_3D = np.zeros(((nz,ilong,ntime)))
-	
-    # Open the group names file as a list to go through for dict keys
-	chemical_element_list = load_txt_file(chemical_element_list_file_loc)
 
 	#believe these are for the mass mixing ratios of the gases, and the species vapour pressure
 	mmr_chemical_element_dict = {}

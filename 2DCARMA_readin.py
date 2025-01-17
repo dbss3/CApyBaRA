@@ -28,11 +28,20 @@ def load_txt_file(file_name):
     return result
 
 
-def read_in(file_loc,longitudes_loc):
+def read_in(file_loc,longitudes_loc,group_name_list_file_loc,cloud_element_list_file_loc):
+	########################################################
 	# For now I need the to read in the longitudes seperately to get 
 	# the number of longitudes, I will be adding this to 2DCARMA output
 	longitudes_array = np.loadtxt(longitudes_loc)
 	ilong = len(longitudes_array)
+
+	########################################################
+	# Have now set this up so that I need to read these files in here
+	# to setup group names and chemical elements
+    # Open the group names file as a list to go through for dict keys
+	group_name_list = load_txt_file(group_name_list_file_loc)
+	# Open the group names file as a list to go through for dict keys
+	cloud_element_list = load_txt_file(cloud_element_list_file_loc)
 
 	########################################################
 	# The file this one reads in is the main one, 
@@ -64,13 +73,14 @@ def read_in(file_loc,longitudes_loc):
 	print('Setting up the arrays')
 	########################################################
 	# Set up all the arrays
-	pressure_array, temperature_array, height_array, time_array, distance_array, rotation_array, longitude_count_array = setup_arrays_1D(nz,ntime,ilong)
+	pressure_array, temperature_array, height_array, \
+		time_array, distance_array, rotation_array, longitude_count_array = setup_arrays_1D(nz,ntime,ilong)
 	r_array , ms_array, dr_array, rl_array, ru_array = setup_arrays_2D(nbin,ngroup)
-	#p_chemical_element_dict, pm_chemical_element_dict = setup_dict_2D(nz, nbin)
-	temporal_global_cloud_dict = setup_dicts_4D(nz,nbin,ilong,ntime,group_name_list_file_loc)
-	mmr_chemical_element_dict, svp_chemical_element_dict = setup_dicts_3D(nz,ilong,ntime,chemical_element_list_file_loc)
+	#p_cloud_element_dict, pm_cloud_element_dict = setup_dict_2D(nz, nbin)
+	temporal_global_cloud_dict = setup_dicts_4D(nz,nbin,ilong,ntime,group_name_list)
+	mmr_cloud_element_dict, svp_cloud_element_dict = setup_dicts_3D(nz,ilong,ntime,cloud_element_list)
 
-	print('arrays set up')
+	print('Arrays set up')
 
 	print('Reading the particle size bins')
 	########################################################
@@ -147,7 +157,7 @@ def read_in(file_loc,longitudes_loc):
 				#lets check the line lengths align with our hardcoded expectations
 				#print('Are lines the right length for the hardcoded values:')
 				#print(len(group_name_list),len(cloud_properties_for_line_array))
-				#print(len(chemical_element_list),len(mmr_for_line_array),len(svp_for_line_array))
+				#print(len(cloud_element_list),len(mmr_for_line_array),len(svp_for_line_array))
 
 				for g, group_name in enumerate(group_name_list):
 					temporal_global_cloud_dict[group_name][k,j,long_index,i] = float(cloud_properties_for_line_array[g])
@@ -156,13 +166,13 @@ def read_in(file_loc,longitudes_loc):
 					#Lets compute this later - NOW DONE JUST BEFORE PLOTTING
 					#mass_tio2[k,j,long_index,i] = tio2[k,j,long_index,i]*(M_TIO2*((4./3.)*np.pi*(r[j,0]*1e-4)**3.))
 
-				for c, chemical_element in enumerate(chemical_element_list):
-					mmr_chemical_element_dict[chemical_element][k,long_index,i] = float(mmr_for_line_array[c])
-					svp_chemical_element_dict[chemical_element][k,long_index,i] = float(svp_for_line_array[c])
+				for c, cloud_element in enumerate(cloud_element_list):
+					mmr_cloud_element_dict[cloud_element][k,long_index,i] = float(mmr_for_line_array[c])
+					svp_cloud_element_dict[cloud_element][k,long_index,i] = float(svp_for_line_array[c])
 					
 					#need to covert: partial pressure
 					#and convert to bar, have to do square because both values above are in the wrong units
-					mmr_chemical_element_dict[chemical_element][k,long_index,i] *= pressure_array[k]*pressure_to_bar**2
-					svp_chemical_element_dict[chemical_element][k,long_index,i] *= pressure_array[k]*pressure_to_bar**2
+					mmr_cloud_element_dict[cloud_element][k,long_index,i] *= pressure_array[k]*pressure_to_bar**2
+					svp_cloud_element_dict[cloud_element][k,long_index,i] *= pressure_array[k]*pressure_to_bar**2
 
 	print('Finally Read-in complete')
