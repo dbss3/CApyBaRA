@@ -152,6 +152,9 @@ def cloud_contour_plot_cartesian_particle_bin_pressure(axis,group_name,desired_l
 
 	longitude_specific_masked_array = time_averaged_global_specific_group_array[:,:,mask]
 
+	# OK, now we want to sum over the remaining values of the longitude dimension
+	contour_value_array = np.sum(longitude_specific_masked_array, axis=-1)
+
 	# handle zero values, which cause problems with log scale,
 	# then also generate appropriate levels
 	contour_value_array, levels = handle_zeros_and_make_levels(contour_value_array)
