@@ -1,0 +1,10 @@
+# This File only exists because the columns don't have headers so the order matters
+# List of the materials which can constitute cloud particle elements (per CARMA def)
+# but what about mns and na2s, no I'm still really confused what these are meant to be
+ti
+fe
+mg
+cr
+zn
+al
+kc
