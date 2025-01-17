@@ -249,3 +249,19 @@ def read_in(file_loc,longitudes_loc,cloud_properties_file_loc='./group_names_and
 					svp_cloud_element_dict[cloud_element][k,long_index,i] *= pressure_array[k]*pressure_to_bar**2
 
 	print('Finally Read-in complete')
+      
+	########################################################
+	# Save the full data to compressed npz
+
+	dicts_to_save_dict = {'temporal_global_cloud_properties' : temporal_global_cloud_dict,
+					      'mmr_chemical_element_properties' : mmr_cloud_element_dict,
+						  'svp_chemical_element_properties' : svp_cloud_element_dict,
+					   }
+	
+	saved_dict_names_list = []
+	for name, dict in dicts_to_save_dict.items():
+		saved_dict_name = output_dictionary_to_compressed_npzfile(pressure_array,longitudes_array,r_array,longitude_count_array,
+								dict,name,infile_name)
+		saved_dict_names_list.append(saved_dict_name)
+            
+	return saved_dict_names_list
