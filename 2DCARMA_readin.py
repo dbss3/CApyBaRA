@@ -1,5 +1,6 @@
 import numpy as np
 from array_setup_routines import setup_arrays_1D, setup_arrays_2D,setup_dicts_3D,setup_dicts_4D
+from constants import pressure_to_bar
 
 ########################################################
 # Functions to do the actual read in of the files'
