@@ -4,7 +4,43 @@ from constants import pressure_to_bar
 from save_arrays import output_dictionary_to_compressed_npzfile
 
 ########################################################
-# Functions to do the actual read in of the files'
+# Functions to do the actual read in of the files
+
+def read_file_to_dict(file_path):
+    """
+    Reads a file and parses it into a dictionary. Lines starting with '#' are ignored,
+    and lines starting with '!' are treated as keys, with the following line as the corresponding value.
+
+    :param file_path: Path to the input file
+    :return: Dictionary with keys and values parsed from the file
+    """
+    file_locs_and_names_dict = {}
+    
+    with open(file_path, 'r') as file:
+        lines = file.readlines()
+        
+    # Clean up lines and filter out comments
+    clean_lines = []
+    for line in lines:
+        stripped_line = line.split('#')[0].strip()  # Remove comments and trim whitespace
+        if stripped_line:  # Skip empty lines
+            clean_lines.append(stripped_line)
+    
+    # Iterate through lines to build the dictionary
+    i = 0
+    while i < len(clean_lines):
+        if clean_lines[i].startswith('!'):
+            key = clean_lines[i][1:].strip()  # Remove '!' and strip whitespace
+            if i + 1 < len(clean_lines):  # Check if there's a next line
+                value = clean_lines[i + 1].strip()
+                file_locs_and_names_dict[key] = value
+                i += 2  # Skip the next line since it's the value
+            else:
+                raise ValueError(f"Missing value for key '{key}' in the file.")
+        else:
+            i += 1  # Continue to the next line
+    
+    return file_locs_and_names_dict
 
 def load_txt_file(file_name):
     """

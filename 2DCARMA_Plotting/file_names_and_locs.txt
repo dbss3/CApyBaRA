@@ -1,0 +1,20 @@
+# File which contains all the names for the individual files that need read in
+# Means only this file name needs to be passed rather than all the different
+# file names to all the functions
+
+! file_loc
+/Users/dominicsamra/Documents/
+
+! file_name
+WASP-52b_clear_1xsolar_1Kzz
+
+! longitudes_loc
+../run/carma/
+
+! longitudes_name
+longitudes_WASP-52b_clear_1xsolar.txt
+
+! outfile_loc
+./
+
+! outfile_name
