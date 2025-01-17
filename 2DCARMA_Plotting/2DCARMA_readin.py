@@ -98,7 +98,7 @@ def read_in(file_loc,longitudes_loc,cloud_properties_file_loc='./group_names_and
 	cloud_properties_dict = read_cloud_properties(cloud_properties_file_loc)
 
 	# The groups are their own individual entries in the dictionary
-	group_name_list = [cloud_properties_dict.keys()]
+	group_name_list = cloud_properties_dict.keys()
 	print('read in expected group names')
     
 	# Have to do a bit more work to get the unique materials comprising the clouds
