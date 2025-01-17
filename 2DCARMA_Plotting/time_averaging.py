@@ -23,23 +23,6 @@ def do_time_averaging(temporal_global_cloud_dict,mmr_chemical_element_dict,svp_c
     time_averaged_mmr_chemical_element_dict = {key: np.sum(value, axis=dim_to_sum)/longitude_count_array for key,value in mmr_chemical_element_dict.items()}
     time_averaged_svp_chemical_element_dict = {key: np.sum(value, axis=dim_to_sum)/longitude_count_array for key,value in svp_chemical_element_dict.items()}
 
-    '''
-    # Old way of doing it, saving until testing is done.
-    time_averaged_global_cloud_dict = {}
-    time_averaged_mmr_chemical_element_dict = {}
-    time_averaged_svp_chemical_element_dict = {}
-    for key, value in temporal_global_cloud_dict.items():
-        print(np.shape(value))
-        time_averaged_global_cloud_dict[key] = np.sum(value, axis=dim_to_sum)
-        time_averaged_global_cloud_dict[key] /= longitude_count_array
-        print(np.shape(time_averaged_global_cloud_dict[key]))
-    for key, value in mmr_chemical_element_dict.items(): # These dictionaries share the same keys
-        time_averaged_mmr_chemical_element_dict[key] = np.sum(value, axis=dim_to_sum)
-        time_averaged_mmr_chemical_element_dict[key] /= longitude_count_array
-        
-        time_averaged_svp_chemical_element_dict[key] = np.sum(svp_chemical_element_dict[key], axis=dim_to_sum)
-        time_averaged_svp_chemical_element_dict[key] /= longitude_count_array
-    '''
     print('Time averaging complete')
 
     ########################################################
@@ -58,3 +41,21 @@ def do_time_averaging(temporal_global_cloud_dict,mmr_chemical_element_dict,svp_c
         saved_time_averaged_dict_names_list.append(saved_dict_name)
 
     return saved_time_averaged_dict_names_list
+
+    '''
+    # Old way of doing it, saving until testing is done.
+    time_averaged_global_cloud_dict = {}
+    time_averaged_mmr_chemical_element_dict = {}
+    time_averaged_svp_chemical_element_dict = {}
+    for key, value in temporal_global_cloud_dict.items():
+        print(np.shape(value))
+        time_averaged_global_cloud_dict[key] = np.sum(value, axis=dim_to_sum)
+        time_averaged_global_cloud_dict[key] /= longitude_count_array
+        print(np.shape(time_averaged_global_cloud_dict[key]))
+    for key, value in mmr_chemical_element_dict.items(): # These dictionaries share the same keys
+        time_averaged_mmr_chemical_element_dict[key] = np.sum(value, axis=dim_to_sum)
+        time_averaged_mmr_chemical_element_dict[key] /= longitude_count_array
+        
+        time_averaged_svp_chemical_element_dict[key] = np.sum(svp_chemical_element_dict[key], axis=dim_to_sum)
+        time_averaged_svp_chemical_element_dict[key] /= longitude_count_array
+    '''

@@ -2,7 +2,6 @@ import numpy as np
 
 ########################################################
 # Functions to do setup of the arrays
-
 def setup_arrays_1D(nz,ntime,ilong):
 	# Setup 1D arrays 
 
