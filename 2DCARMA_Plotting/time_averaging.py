@@ -3,7 +3,7 @@ from save_arrays import output_dictionary_to_compressed_npzfile
   
 ########################################################
 # routine to time average the 2D read in arrays
-def do_time_averaging(temporal_global_cloud_dict,mmr_chemical_element_dict,svp_chemical_element_dict,longitude_count_array):
+def do_time_averaging(temporal_global_cloud_dict,mmr_chemical_element_dict,svp_chemical_element_dict,longitude_count_array,pressure_array,longitudes_array,r_array,infile_name):
     print('Starting time averaging')
 
     print('Longitude count array:',longitude_count_array)
