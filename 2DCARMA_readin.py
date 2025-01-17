@@ -2,7 +2,7 @@ import numpy as np
 from array_setup_routines import setup_arrays_1D, setup_arrays_2D,setup_dicts_3D,setup_dicts_4D
 
 ########################################################
-# Functions to do the actual read in of the files
+# Functions to do the actual read in of the files'
 
 def load_txt_file(file_name):
     """
@@ -28,7 +28,61 @@ def load_txt_file(file_name):
     return result
 
 
-def read_in(file_loc,longitudes_loc,group_name_list_file_loc,cloud_element_list_file_loc):
+def read_cloud_properties(file_name):
+    """
+    Parses a structured text file into a dictionary based on a key header line,
+    ignoring comments (#) and processing the cloud_elements_list as a list of strings.
+    
+    Parameters:
+        file_name (str): The name of the text file to parse.
+    
+    Returns:
+        dict: A dictionary where keys are taken from the header line starting with '!',
+              and values are lists of strings parsed from the lines.
+    """
+    parsed_data_dict = {}
+    header_key = None
+
+    try:
+        with open(file_name, 'r') as file:
+            for line in file:
+                # Remove comments starting with #
+                line = line.split("#")[0].strip()
+                
+                # Ignore empty lines
+                if not line:
+                    continue
+                
+                # Identify header key
+                if line.startswith("!"):
+                    header_key = line[1:].strip()  # Remove '!' and strip whitespace
+                    parsed_data_dict[header_key] = []
+                    continue
+                
+                # Process data lines
+                if header_key:
+                    parts = line.split(",")
+                    # Strip whitespace from each part
+                    parts = [part.strip() for part in parts]
+                    
+                    # Extract and process the cloud_elements_list (last part)
+                    if parts[-1].startswith("[") and parts[-1].endswith("]"):
+                        cloud_elements = parts[-1][1:-1].split(",")  # Remove brackets and split
+                        cloud_elements = [el.strip() for el in cloud_elements]  # Strip each element
+                        parts[-1] = cloud_elements
+                    
+                    # Append processed line to the list under the current key
+                    parsed_data_dict[header_key].append(parts)
+    
+    except FileNotFoundError:
+        print(f"Error: The file {file_name} was not found.")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+    
+    return parsed_data_dict
+
+
+def read_in(file_loc,longitudes_loc,cloud_properties_file_loc='./group_names_and_properties_DEFAULT.txt',cloud_materials_file_loc='./cloud_material_DEFAULT.txt'):
 	########################################################
 	# For now I need the to read in the longitudes seperately to get 
 	# the number of longitudes, I will be adding this to 2DCARMA output
@@ -37,11 +91,22 @@ def read_in(file_loc,longitudes_loc,group_name_list_file_loc,cloud_element_list_
 
 	########################################################
 	# Have now set this up so that I need to read these files in here
-	# to setup group names and chemical elements
-    # Open the group names file as a list to go through for dict keys
-	group_name_list = load_txt_file(group_name_list_file_loc)
-	# Open the group names file as a list to go through for dict keys
-	cloud_element_list = load_txt_file(cloud_element_list_file_loc)
+	# to setup group names and materials in the cloud elements
+
+	cloud_properties_dict = read_cloud_properties(cloud_properties_file_loc)
+
+	# The groups are their own individual entries in the dictionary
+	group_name_list = [cloud_properties_dict.keys()]
+	print('read in expected group names')
+    
+	# Have to do a bit more work to get the unique materials comprising the clouds
+	# Will work in the future when the output has headers
+
+	#But ordering matters here, for now just reading in an ordered seperate file,
+	cloud_element_list = load_txt_file(cloud_materials_file_loc)
+    #TODO: OK THIS FILE IS REALLY CONFUSING, its just read in now for consistency
+    # with the code, but these arrays I don't use atm, and I don't know what they are
+
 
 	########################################################
 	# The file this one reads in is the main one, 
@@ -64,6 +129,14 @@ def read_in(file_loc,longitudes_loc,group_name_list_file_loc,cloud_element_list_
 	
 	line = infile.readline().split()
 	nz,ngroup,nelem,nbin,ngas,nstep,iskip = map(int,line)
+      
+	# Do a quick check to see if ngroup matches the cloud dict loaded
+	if len(group_name_list) == ngroup:
+		print('File matches expected cloud group setup')
+	else:
+		print('File DOES NOT match expected cloud groups, please input a correct cloud group file,')
+		print(f'cloud_group file used atm: {cloud_properties_file_loc}')
+		quit()
 
 	# Do a little computation, NB: assumes the run completes
 	# ntime = number of timesteps recorded
