@@ -111,11 +111,11 @@ def main():
 
         groups_with_errors = []
         for group_name in group_name_list:
-            #ry:
-            plotter(loaded_dict,group_name,which_plot,desire_value,outfile_loc,run_name,cloud_properties_dict)
-            #except:
-            #    print(f'Error with plotting group: {group_name}')
-            #    groups_with_errors.append(group_name)
+            try:
+                plotter(loaded_dict,group_name,which_plot,desire_value,outfile_loc,run_name,cloud_properties_dict)
+            except:
+                print(f'Error with plotting group: {group_name}')
+                groups_with_errors.append(group_name)
 
         print('Finished running script. Errors with plotting:')
         for e in groups_with_errors:

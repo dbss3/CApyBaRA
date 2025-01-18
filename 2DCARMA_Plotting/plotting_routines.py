@@ -183,6 +183,11 @@ def plotter(loaded_dict,group_name,which_plot,desire_value,outfile_loc,run_name,
 		ax.set_yscale('log')
 		#ax.set_xlim(min(longitudes_array),max(longitudes_array))
 		#ax.set_ylim(1,min(pressure_array/1.e6))
+		ax.axvline(90,ls='--',color='g')
+		ax.axvline(-90,ls='--',color='g')
+		lon_ticks = np.arange(180,-180,-45) # doing backwards because lons are 180 >= l > -180
+		ax.set_xticks(lon_ticks)
+		ax.set_xticklabels(lon_ticks)
 		save_name = f'{run_name}_{which_plot}_of_{group_name}_at_{desire_value}bar'
 
 
