@@ -1,6 +1,8 @@
 import numpy as np
 import os, sys
 from read_in_routines import read_in_for_2DCARMA, read_file_to_dict
+from time_averaging import do_time_averaging
+from plotting_routines import plotter
 
 # Function that does everything
 def main():
@@ -32,49 +34,59 @@ def main():
         # Need to make sure input file names and locations
         # have been provided
         # First the infile - i.e. the  2DCARMA output file
-        infile_path = check_for_path(file_locs_and_names_dict,'infile')
+        infile_path = check_for_inpath(file_locs_and_names_dict,'infile')
 
         # Now the longitudes file, has to be read in seperately due
         # to no headers in the 2DCARMA output
-        longitudes_path = check_for_path(file_locs_and_names_dict,'longitudes')
+        longitudes_path = check_for_inpath(file_locs_and_names_dict,'longitudes')
 
-        cloud_properties_file_path = check_for_path(file_locs_and_names_dict,'cloud_properties_file')
+        cloud_properties_file_path = check_for_inpath(file_locs_and_names_dict,'cloud_properties_file')
 
-        cloud_materials_file_path = check_for_path(file_locs_and_names_dict,'cloud_materials_file')
+        cloud_materials_file_path = check_for_inpath(file_locs_and_names_dict,'cloud_materials_file')
+
+        #See if the output file is established
+        outfile_loc = check_for_outpath(file_locs_and_names_dict,'outfile_loc')
+
+        #Allow the user to establish a different run_name, otherwise just use the infile_name
+        run_name = check_for_run_name(file_locs_and_names_dict,'run_name')
         
         # OK finally do the read in
         if cloud_properties_file_path != 'use_default' and cloud_materials_file_path != 'use_default':
-            saved_names_list = read_in_for_2DCARMA(infile_path,longitudes_path,infile_name,\
+            saved_names_list = read_in_for_2DCARMA(infile_path,longitudes_path,run_name,\
             cloud_properties_file_path=cloud_properties_file_path,
             cloud_materials_file_path=cloud_materials_file_path)
         elif cloud_properties_file_path == 'use_default' and cloud_materials_file_path != 'use_default':
-            saved_names_list = read_in_for_2DCARMA(infile_path,longitudes_path,infile_name,\
+            saved_names_list = read_in_for_2DCARMA(infile_path,longitudes_path,run_name,\
             cloud_materials_file_path=cloud_materials_file_path)
         elif cloud_properties_file_path != 'use_default' and cloud_materials_file_path == 'use_default':
-            saved_names_list = read_in_for_2DCARMA(infile_path,longitudes_path,infile_name,\
+            saved_names_list = read_in_for_2DCARMA(infile_path,longitudes_path,run_name,\
             cloud_properties_file_path=cloud_properties_file_path)
         else: # Using the default files
-            saved_names_list = read_in_for_2DCARMA(infile_path,longitudes_path,infile_name)
+            saved_names_list = read_in_for_2DCARMA(infile_path,longitudes_path,run_name)
 
     if new_or_time_averaged_or_plotting_or_replotting <= 2:
         # Have already read in once, so just need to
         # do time averaging
+        do_time_averaging
         pass
 
     if new_or_time_averaged_or_plotting_or_replotting <= 3:
         # Has already done the time averaging and 
         # just have to run the plotting scripts
+        plotter
         pass
 
     if new_or_time_averaged_or_plotting_or_replotting <= 4:
         # already done all the plotting before,
         # but probably want to change something
         # about the figure
+        #TODO: replotter function
         pass
 
     return
 
-def check_for_path(file_locs_and_names_dict,file_str):
+################################################################S
+def check_for_inpath(file_locs_and_names_dict,file_str):
     if f'{file_str}_loc' in file_locs_and_names_dict:
         loc = file_locs_and_names_dict[f'{file_str}_loc']
     else:
@@ -86,6 +98,7 @@ def check_for_path(file_locs_and_names_dict,file_str):
 
     if f'{file_str}_name' in file_locs_and_names_dict:
         name = file_locs_and_names_dict[f'{file_str}_name']
+
     else:
         print(f'No {file_str}_name for read in provided,')
 
@@ -112,6 +125,37 @@ def check_for_path(file_locs_and_names_dict,file_str):
             quit()
     
     return path
+
+def check_for_outpath(file_locs_and_names_dict,file_str):
+    if f'{file_str}_loc' in file_locs_and_names_dict:
+        loc = file_locs_and_names_dict[f'{file_str}_loc']
+
+        if not os.path.exists(loc):
+            os.makedirs(loc)
+            print(f"Directory created at: {loc}")
+        else:
+            print(f"Directory already exists at: {loc}")
+
+        print(f'Will output all plots and npz files to location: {loc}')
+
+    else:
+        print(f'No {file_str}_loc for read in provided,')
+        print('will output all plots and npz files local to where the script is run (i.e. ./).')
+        print('If this is not your desired effect,')
+        print('please check your file_names_and_locs.txt file')
+        loc = './'
+
+    return loc
+
+def check_for_run_name(file_locs_and_names_dict,file_str):
+    if f'{file_str}' in file_locs_and_names_dict:
+        name = file_locs_and_names_dict[f'{file_str}']
+    else:
+        print(f'No {file_str} provided,')
+        print('Will use the infile_name as run_name')
+        name = file_locs_and_names_dict['infile_name']
+
+    return name
 
 ##########################################################
 # Litle bit of python that means calling this script runs the function

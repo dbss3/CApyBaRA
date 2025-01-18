@@ -120,18 +120,17 @@ def read_cloud_properties(file_name):
     return parsed_data_dict
 
 
-def read_in(file_loc,longitudes_loc,infile_name,cloud_properties_file_loc='./group_names_and_properties_DEFAULT.txt',cloud_materials_file_loc='./cloud_material_DEFAULT.txt'):
+def read_in_for_2DCARMA(file_path,longitudes_path,infile_name,cloud_properties_file_path='./group_names_and_properties_DEFAULT.txt',cloud_materials_file_path='./cloud_material_DEFAULT.txt'):
 	########################################################
 	# For now I need the to read in the longitudes seperately to get 
 	# the number of longitudes, I will be adding this to 2DCARMA output
-	longitudes_array = np.loadtxt(longitudes_loc)
+	longitudes_array = np.loadtxt(longitudes_path)
 	ilong = len(longitudes_array)
 
 	########################################################
 	# Have now set this up so that I need to read these files in here
 	# to setup group names and materials in the cloud elements
-
-	cloud_properties_dict = read_cloud_properties(cloud_properties_file_loc)
+	cloud_properties_dict = read_cloud_properties(cloud_properties_file_path)
 
 	# The groups are their own individual entries in the dictionary
 	group_name_list = cloud_properties_dict.keys()
@@ -141,15 +140,14 @@ def read_in(file_loc,longitudes_loc,infile_name,cloud_properties_file_loc='./gro
 	# Will work in the future when the output has headers
 
 	#But ordering matters here, for now just reading in an ordered seperate file,
-	cloud_element_list = load_txt_file(cloud_materials_file_loc)
+	cloud_element_list = load_txt_file(cloud_materials_file_path)
     #TODO: OK THIS FILE IS REALLY CONFUSING, its just read in now for consistency
     # with the code, but these arrays I don't use atm, and I don't know what they are
-
 
 	########################################################
 	# The file this one reads in is the main one, 
 	# not the *_temp*.txt files, or the *_rates.txt, or *_flux.txt files
-	infile = open(file_loc,'r')
+	infile = open(file_path,'r')
 
 	########################################################
 	# Just read the first line for the run details
@@ -173,7 +171,7 @@ def read_in(file_loc,longitudes_loc,infile_name,cloud_properties_file_loc='./gro
 		print('File matches expected cloud group setup')
 	else:
 		print('File DOES NOT match expected cloud groups, please input a correct cloud group file,')
-		print(f'cloud_group file used atm: {cloud_properties_file_loc}')
+		print(f'cloud_group file used atm: {cloud_properties_file_path}')
 		quit()
 
 	# Do a little computation, NB: assumes the run completes
