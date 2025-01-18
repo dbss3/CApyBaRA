@@ -134,7 +134,7 @@ def read_in_for_2DCARMA(infile_path,longitudes_path,outfile_loc,run_name,cloud_p
 
 	# The groups are their own individual entries in the dictionary
 	group_name_list = cloud_properties_dict.keys()
-	print('Read in expected group names')
+	print(f'Read in expected group names: {group_name_list}')
     
 	# Have to do a bit more work to get the unique materials comprising the clouds
 	# Will work in the future when the output has headers
@@ -167,11 +167,13 @@ def read_in_for_2DCARMA(infile_path,longitudes_path,outfile_loc,run_name,cloud_p
 	nz,ngroup,nelem,nbin,ngas,nstep,iskip = map(int,line)
       
 	# Do a quick check to see if ngroup matches the cloud dict loaded
+	print('Checking input file matches expected groups')
+	print(f'ngroup from input file: {ngroup}, group properties for: {len(group_name_list)}')
 	if len(group_name_list) == ngroup:
-		print('File matches expected cloud group setup')
+		print('File matches expected cloud group setup\n')
 	else:
 		print('File DOES NOT match expected cloud groups, please input a correct cloud group file,')
-		print(f'cloud_group file used atm: {cloud_properties_file_path}')
+		print(f'cloud_group file used atm: {cloud_properties_file_path}\n')
 		quit()
 
 	# Do a little computation, NB: assumes the run completes
