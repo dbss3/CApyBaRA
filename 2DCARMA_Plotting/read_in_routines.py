@@ -120,7 +120,7 @@ def read_cloud_properties(file_name):
     return parsed_data_dict
 
 
-def read_in_for_2DCARMA(file_path,longitudes_path,infile_name,cloud_properties_file_path='./group_names_and_properties_DEFAULT.txt',cloud_materials_file_path='./cloud_material_DEFAULT.txt'):
+def read_in_for_2DCARMA(infile_path,longitudes_path,outfile_loc,run_name,cloud_properties_file_path='./group_names_and_properties_DEFAULT.txt',cloud_materials_file_path='./cloud_material_DEFAULT.txt'):
 	########################################################
 	# For now I need the to read in the longitudes seperately to get 
 	# the number of longitudes, I will be adding this to 2DCARMA output
@@ -147,7 +147,7 @@ def read_in_for_2DCARMA(file_path,longitudes_path,infile_name,cloud_properties_f
 	########################################################
 	# The file this one reads in is the main one, 
 	# not the *_temp*.txt files, or the *_rates.txt, or *_flux.txt files
-	infile = open(file_path,'r')
+	infile = open(infile_path,'r')
 
 	########################################################
 	# Just read the first line for the run details
@@ -289,15 +289,15 @@ def read_in_for_2DCARMA(file_path,longitudes_path,infile_name,cloud_properties_f
 	########################################################
 	# Save the full data to compressed npz
 
-	dicts_to_save_dict = {'temporal_global_cloud_properties' : temporal_global_cloud_dict,
-					      'mmr_chemical_element_properties' : mmr_cloud_element_dict,
-						  'svp_chemical_element_properties' : svp_cloud_element_dict,
+	dicts_to_save_dict = {'temporal_global_cloud_properties': temporal_global_cloud_dict,
+					      'mmr_cloud_element_properties':  mmr_cloud_element_dict,
+						  'svp_cloud_element_properties':  svp_cloud_element_dict,
 					   }
 	
-	saved_dict_names_list = []
-	for name, dict in dicts_to_save_dict.items():
-		saved_dict_name = output_dictionary_to_compressed_npzfile(pressure_array,longitudes_array,r_array,longitude_count_array,
-								dict,name,infile_name)
-		saved_dict_names_list.append(saved_dict_name)
+	saved_dict_paths_list = []
+	for dict_name, dict in dicts_to_save_dict.items():
+		saved_dict_path = output_dictionary_to_compressed_npzfile(pressure_array,longitudes_array,r_array,longitude_count_array,
+								dict,dict_name,outfile_loc,run_name)
+		saved_dict_paths_list.append(saved_dict_path)
             
-	return saved_dict_names_list
+	return saved_dict_paths_list

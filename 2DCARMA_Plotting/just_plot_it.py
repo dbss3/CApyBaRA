@@ -4,6 +4,7 @@ from read_in_routines import read_in_for_2DCARMA, read_file_to_dict
 from time_averaging import do_time_averaging
 from plotting_routines import plotter
 
+########################################################
 # Function that does everything
 def main():
     """
@@ -52,22 +53,23 @@ def main():
         
         # OK finally do the read in
         if cloud_properties_file_path != 'use_default' and cloud_materials_file_path != 'use_default':
-            saved_names_list = read_in_for_2DCARMA(infile_path,longitudes_path,run_name,\
+            saved_dict_paths_list = read_in_for_2DCARMA(infile_path,longitudes_path,outfile_loc,run_name,\
             cloud_properties_file_path=cloud_properties_file_path,
             cloud_materials_file_path=cloud_materials_file_path)
         elif cloud_properties_file_path == 'use_default' and cloud_materials_file_path != 'use_default':
-            saved_names_list = read_in_for_2DCARMA(infile_path,longitudes_path,run_name,\
+            saved_dict_paths_list = read_in_for_2DCARMA(infile_path,longitudes_path,outfile_loc,run_name,\
             cloud_materials_file_path=cloud_materials_file_path)
         elif cloud_properties_file_path != 'use_default' and cloud_materials_file_path == 'use_default':
-            saved_names_list = read_in_for_2DCARMA(infile_path,longitudes_path,run_name,\
+            saved_dict_paths_list = read_in_for_2DCARMA(infile_path,longitudes_path,outfile_loc,run_name,\
             cloud_properties_file_path=cloud_properties_file_path)
         else: # Using the default files
-            saved_names_list = read_in_for_2DCARMA(infile_path,longitudes_path,run_name)
+            saved_dict_paths_list = read_in_for_2DCARMA(infile_path,longitudes_path,outfile_loc,run_name)
 
     if new_or_time_averaged_or_plotting_or_replotting <= 2:
-        # Have already read in once, so just need to
+        # Have already read in once, so just need to lpass the paths
+
         # do time averaging
-        do_time_averaging
+        do_time_averaging(saved_dict_paths_list,outfile_loc,run_name)
         pass
 
     if new_or_time_averaged_or_plotting_or_replotting <= 3:

@@ -52,18 +52,18 @@ def setup_dicts_4D(nz,nbin,ilong,ntime,group_name_list):
 
 	return temporal_global_cloud_dict
 
-def setup_dicts_3D(nz,ilong,ntime,chemical_element_list):
+def setup_dicts_3D(nz,ilong,ntime,cloud_element_list):
 	# Setup 3D arrays for pressure, longitude, time
 	temporal_global_array_3D = np.zeros(((nz,ilong,ntime)))
 
 	#believe these are for the mass mixing ratios of the gases, and the species vapour pressure
-	mmr_chemical_element_dict = {}
-	svp_chemical_element_dict = {}
-	for c, chemical_element in enumerate(chemical_element_list): #Also see hard coding at top
-		mmr_chemical_element_dict[chemical_element] = np.copy(temporal_global_array_3D)
-		svp_chemical_element_dict[chemical_element] = np.copy(temporal_global_array_3D)
+	mmr_cloud_element_dict = {}
+	svp_cloud_element_dict = {}
+	for c, cloud_element in enumerate(cloud_element_list): #Also see hard coding at top
+		mmr_cloud_element_dict[cloud_element] = np.copy(temporal_global_array_3D)
+		svp_cloud_element_dict[cloud_element] = np.copy(temporal_global_array_3D)
 
-	return mmr_chemical_element_dict, svp_chemical_element_dict
+	return mmr_cloud_element_dict, svp_cloud_element_dict
 
 '''
 #######################################################################
@@ -96,24 +96,24 @@ def setup_dict_3D_and_time_averaged_dict_2D(nz,ilong,ntime):
 	temporal_global_array_3D = np.zeros(((nz,ilong,ntime)))
 
 	#believe these are for the mass mixing ratios of the gases, and the species vapour pressure
-	mmr_chemical_element_dict = {}
-	svp_chemical_element_dict = {}
-	for c, chemical_element in enumerate(chemical_element_list): #Also see hard coding at top
-		mmr_chemical_element_dict[chemical_element] = np.copy(temporal_global_array_3D)
-		svp_chemical_element_dict[chemical_element] = np.copy(temporal_global_array_3D)
+	mmr_cloud_element_dict = {}
+	svp_cloud_element_dict = {}
+	for c, cloud_element in enumerate(cloud_element_list): #Also see hard coding at top
+		mmr_cloud_element_dict[cloud_element] = np.copy(temporal_global_array_3D)
+		svp_cloud_element_dict[cloud_element] = np.copy(temporal_global_array_3D)
 
 	
 	# Getting rid of time-averaging here, as I don't think its needed
 	# But keeping the code until I've tested this.
 	# Now lets setup a dictionary for time-averaged 2D arrays of the above:
-	time_averaged_chemical_element_array_2D = np.zeros((nz,ilong))
+	time_averaged_cloud_element_array_2D = np.zeros((nz,ilong))
 
-	time_averaged_mmr_chemical_element_dict = {}
-	time_averaged_svp_chemical_element_dict = {}
-	for c, chemical_element in enumerate(chemical_element_list):
-		time_averaged_mmr_chemical_element_dict[chemical_element] = np.copy(time_averaged_chemical_element_array_2D)
-		time_averaged_svp_chemical_element_dict[chemical_element] = np.copy(time_averaged_chemical_element_array_2D)
+	time_averaged_mmr_cloud_element_dict = {}
+	time_averaged_svp_cloud_element_dict = {}
+	for c, cloud_element in enumerate(cloud_element_list):
+		time_averaged_mmr_cloud_element_dict[cloud_element] = np.copy(time_averaged_cloud_element_array_2D)
+		time_averaged_svp_cloud_element_dict[cloud_element] = np.copy(time_averaged_cloud_element_array_2D)
 		
 
-	return mmr_chemical_element_dict, svp_chemical_element_dict #, time_averaged_mmr_chemical_element_dict, time_averaged_svp_chemical_element_dict
+	return mmr_cloud_element_dict, svp_cloud_element_dict #, time_averaged_mmr_cloud_element_dict, time_averaged_svp_cloud_element_dict
 '''
