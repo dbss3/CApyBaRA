@@ -9,7 +9,7 @@
 WASP-52b_clear_1xsolar_1Kzz # file must end in .txt
 
 ! longitudes_loc
-../run/carma
+/Users/dominicsamra/Documents
 
 ! longitudes_name
 longitudes_WASP-52b_clear_1xsolar # file must end in .txt

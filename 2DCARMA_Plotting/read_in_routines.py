@@ -134,7 +134,7 @@ def read_in_for_2DCARMA(infile_path,longitudes_path,outfile_loc,run_name,cloud_p
 
 	# The groups are their own individual entries in the dictionary
 	group_name_list = cloud_properties_dict.keys()
-	print('read in expected group names')
+	print('Read in expected group names')
     
 	# Have to do a bit more work to get the unique materials comprising the clouds
 	# Will work in the future when the output has headers

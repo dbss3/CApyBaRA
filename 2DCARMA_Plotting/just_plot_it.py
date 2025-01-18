@@ -14,19 +14,20 @@ def main():
 
     # Ensure exactly one argument is provided
     if len(sys.argv) != 5:
-        print("Usage: python3 just_plot_it.py <file_path> <which_plot> <desire_value> <new_or_time_averaged_or_plotting_or_replotting=1,2,3,4>")
+        print("Usage: python3 just_plot_it.py <file_path> <new_or_time_averaged_or_plotting_or_replotting=1,2,3,4>  <which_plot> <desire_value>")
         sys.exit(1)
 
     # read in system argumnts
     file_path = sys.argv[1]  # Get the file path from the command-line arguments
-    which_plot = sys.argv[2]
-    desire_value = sys.argv[3] # MUST pass dummy value if the which_plot doesn't need one
-    new_or_time_averaged_or_plotting_or_replotting = sys.argv[4]
+    new_or_time_averaged_or_plotting_or_replotting = int(sys.argv[2])
+    which_plot = sys.argv[3]
+    desire_value = sys.argv[4] # MUST pass dummy value if the which_plot doesn't need one
+    #TODO: will add so that more values can be passed
 
     # Try reading in the file if it exists
     try:
         file_locs_and_names_dict = read_file_to_dict(file_path)
-        print(f'File locations and names: {file_locs_and_names_dict}')
+        print(f'File locations and names: {file_locs_and_names_dict}\n')
     except Exception as e:
         print(f"Error: {e}")
         sys.exit(1)
@@ -49,7 +50,7 @@ def main():
         cloud_materials_file_path = check_for_inpath(file_locs_and_names_dict,'cloud_materials_file')
 
         #See if the output file is established
-        outfile_loc = check_for_outpath(file_locs_and_names_dict,'outfile_loc')
+        outfile_loc = check_for_outpath(file_locs_and_names_dict,'outfile')
 
         #Allow the user to establish a different run_name, otherwise just use the infile_name
         run_name = check_for_run_name(file_locs_and_names_dict,'run_name')
@@ -120,7 +121,7 @@ def check_for_inpath(file_locs_and_names_dict,file_str):
         print(f'No {file_str}_loc for read in provided,')
         print('so assuming file is local to where the routine is being run (i.e. ./).')
         print('If this is not your desired effect,')
-        print('please check your file_names_and_locs.txt file')
+        print('please check your file_names_and_locs.txt file\n')
         loc = './'
 
     if f'{file_str}_name' in file_locs_and_names_dict:
@@ -132,18 +133,18 @@ def check_for_inpath(file_locs_and_names_dict,file_str):
         # For criticial files, infile and longitudes
         # these MUST be provided so quit if not
         if file_str == 'infile' or file_str == 'longitudes':
-            print('please check your file_names_and_locs.txt file')
+            print('please check your file_names_and_locs.txt file\n')
             quit()
-        elif file_str == 'cloud_properties_file_path':
+        elif file_str == 'cloud_properties_file':
             print('however, this is a non-crucial file,')
             print('will default to the DEFAULT inputs.')
             path = './group_names_and_properties_DEFAULT.txt'
-            print(path)
-        elif file_str == 'cloud_materials_file_path':
+            print(f'{path}\n')
+        elif file_str == 'cloud_materials_file':
             print('however, this is a non-crucial file,')
             print('will default to the DEFAULT inputs.')
-            path = './cloud_material_DEFAULT.txt'
-            print(path)
+            path = './cloud_materials_DEFAULT.txt'
+            print(f'{path}\n')
         else:
             print('uh oh, invalid file_str')
             quit()
@@ -154,7 +155,7 @@ def check_for_inpath(file_locs_and_names_dict,file_str):
         path = f'{loc}/{name}.txt'
 
         if os.path.isfile(path):
-            print(f"The file exists at: {path}")
+            print(f"The file exists at: {path}\n")
             return path
         else:
             print(f"The file does not exist at: {path}")
@@ -172,13 +173,13 @@ def check_for_outpath(file_locs_and_names_dict,file_str):
         else:
             print(f"Directory already exists at: {loc}")
 
-        print(f'Will output all plots and npz files to location: {loc}')
+        print(f'Will output all plots and npz files to location: {loc}\n')
 
     else:
         print(f'No {file_str}_loc for read in provided,')
         print('will output all plots and npz files local to where the script is run (i.e. ./).')
         print('If this is not your desired effect,')
-        print('please check your file_names_and_locs.txt file')
+        print('please check your file_names_and_locs.txt file\n')
         loc = './'
 
     return loc
@@ -188,7 +189,7 @@ def check_for_run_name(file_locs_and_names_dict,file_str):
         name = file_locs_and_names_dict[f'{file_str}']
     else:
         print(f'No {file_str} provided,')
-        print('Will use the infile_name as run_name')
+        print('Will use the infile_name as run_name\n')
         name = file_locs_and_names_dict['infile_name']
 
     return name
