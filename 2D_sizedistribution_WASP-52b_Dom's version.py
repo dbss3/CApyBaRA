@@ -780,7 +780,7 @@ file_loc = f'/Users/dominicsamra/Documents/{infile_name}.txt'
 ########################################################
 # Read in and save the files to faster read-ins
 start_time = time.time()  # Record start time
-#saved_names_list saved_time_averaged_names_list = read_in(file_loc,longitudes_loc,infile_name)
+#saved_names_list, saved_time_averaged_names_list = read_in(file_loc,longitudes_loc,infile_name)
 
 end_time = time.time()  # Record end time
 elapsed_time = end_time - start_time 

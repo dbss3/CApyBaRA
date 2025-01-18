@@ -187,7 +187,7 @@ def read_in_for_2DCARMA(infile_path,longitudes_path,outfile_loc,run_name,cloud_p
 	r_array , ms_array, dr_array, rl_array, ru_array = setup_arrays_2D(nbin,ngroup)
 	#p_cloud_element_dict, pm_cloud_element_dict = setup_dict_2D(nz, nbin)
 	temporal_global_cloud_dict = setup_dicts_4D(nz,nbin,ilong,ntime,group_name_list)
-	mmr_cloud_element_dict, svp_cloud_element_dict = setup_dicts_3D(nz,ilong,ntime,cloud_element_list)
+	temporal_mmr_cloud_element_dict, temporal_svp_cloud_element_dict = setup_dicts_3D(nz,ilong,ntime,cloud_element_list)
 
 	print('Arrays set up')
 
@@ -276,13 +276,13 @@ def read_in_for_2DCARMA(infile_path,longitudes_path,outfile_loc,run_name,cloud_p
 					#mass_tio2[k,j,long_index,i] = tio2[k,j,long_index,i]*(M_TIO2*((4./3.)*np.pi*(r[j,0]*1e-4)**3.))
 
 				for c, cloud_element in enumerate(cloud_element_list):
-					mmr_cloud_element_dict[cloud_element][k,long_index,i] = float(mmr_for_line_array[c])
-					svp_cloud_element_dict[cloud_element][k,long_index,i] = float(svp_for_line_array[c])
+					temporal_mmr_cloud_element_dict[cloud_element][k,long_index,i] = float(mmr_for_line_array[c])
+					temporal_svp_cloud_element_dict[cloud_element][k,long_index,i] = float(svp_for_line_array[c])
 					
 					#need to covert: partial pressure
 					#and convert to bar, have to do square because both values above are in the wrong units
-					mmr_cloud_element_dict[cloud_element][k,long_index,i] *= pressure_array[k]*pressure_to_bar**2
-					svp_cloud_element_dict[cloud_element][k,long_index,i] *= pressure_array[k]*pressure_to_bar**2
+					temporal_mmr_cloud_element_dict[cloud_element][k,long_index,i] *= pressure_array[k]*pressure_to_bar**2
+					temporal_svp_cloud_element_dict[cloud_element][k,long_index,i] *= pressure_array[k]*pressure_to_bar**2
 
 	print('Finally Read-in complete')
       
@@ -290,8 +290,8 @@ def read_in_for_2DCARMA(infile_path,longitudes_path,outfile_loc,run_name,cloud_p
 	# Save the full data to compressed npz
 
 	dicts_to_save_dict = {'temporal_global_cloud_properties': temporal_global_cloud_dict,
-					      'mmr_cloud_element_properties':  mmr_cloud_element_dict,
-						  'svp_cloud_element_properties':  svp_cloud_element_dict,
+					      'temporal_mmr_cloud_element_properties':  temporal_mmr_cloud_element_dict,
+						  'temporal_svp_cloud_element_properties':  temporal_svp_cloud_element_dict,
 					   }
 	
 	saved_dict_paths_list = []

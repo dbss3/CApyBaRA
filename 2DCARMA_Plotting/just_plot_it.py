@@ -1,5 +1,6 @@
 import numpy as np
 import os, sys
+import glob
 from read_in_routines import read_in_for_2DCARMA, read_file_to_dict
 from time_averaging import do_time_averaging
 from plotting_routines import plotter
@@ -66,17 +67,28 @@ def main():
             saved_dict_paths_list = read_in_for_2DCARMA(infile_path,longitudes_path,outfile_loc,run_name)
 
     if new_or_time_averaged_or_plotting_or_replotting <= 2:
-        # Have already read in once, so just need to lpass the paths
-
-        # do time averaging
-        do_time_averaging(saved_dict_paths_list,outfile_loc,run_name)
-        pass
+        # Have just read in so saved_dict_paths_list is defined
+        if new_or_time_averaged_or_plotting_or_replotting == 1:
+            # do time averaging, this loads the neccessary dicts and averages them
+            saved_time_averaged_dict_paths_list = do_time_averaging(saved_dict_paths_list,outfile_loc,run_name)
+        else: # Need to go get the files that MUST exist already
+            # Have already read in once, so just need to get the paths from the outfile_loc 
+            # glob it up time Mr globby
+            saved_dict_paths_list = glob.glob(f'{outfile_loc}/temporal_*.npz')
+            #sort it as we want in alphabetical oreder (global_cloud_prop, mmr, svp)
+            saved_dict_paths_list.sort()
+            saved_time_averaged_dict_paths_list = do_time_averaging(saved_dict_paths_list,outfile_loc,run_name)
 
     if new_or_time_averaged_or_plotting_or_replotting <= 3:
-        # Has already done the time averaging and 
+        # Has already done the time averaging and saved_dict_paths are defined
         # just have to run the plotting scripts
-        plotter
-        pass
+        if new_or_time_averaged_or_plotting_or_replotting <= 2:
+            plotter
+        else: #everything up to time averaging done in the past
+            #glob me up scotty some time averaged files
+            saved_time_averaged_dict_paths_list = glob.glob(f'{outfile_loc}/time_averaged_*.npz')
+            saved_time_averaged_dict_paths_list.sort()
+            plotter
 
     if new_or_time_averaged_or_plotting_or_replotting <= 4:
         # already done all the plotting before,
