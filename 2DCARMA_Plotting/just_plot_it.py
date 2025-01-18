@@ -9,17 +9,18 @@ from plotting_routines import plotter
 # Function that does everything
 def main():
     """
-    Main function to do everything
+    Main function to do EVERYTHING
     """
 
     # Ensure exactly one argument is provided
-    if len(sys.argv) != 3:
-        print("Usage: python3 just_plot_it.py <file_path> <new_or_time_averaged_or_plotting_or_replotting=1,2,3,4>")
+    if len(sys.argv) != 4:
+        print("Usage: python3 just_plot_it.py <file_path> <which_plot> <new_or_time_averaged_or_plotting_or_replotting=1,2,3,4>")
         sys.exit(1)
 
     # read in system argumnts
     file_path = sys.argv[1]  # Get the file path from the command-line arguments
-    new_or_time_averaged_or_plotting_or_replotting = sys.argv[2]
+    which_plot = sys.argv[2]
+    new_or_time_averaged_or_plotting_or_replotting = sys.argv[3]
 
     # Try reading in the file if it exists
     try:
