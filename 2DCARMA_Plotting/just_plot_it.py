@@ -20,7 +20,7 @@ def main():
     # read in system argumnts
     file_path = sys.argv[1]  # Get the file path from the command-line arguments
     which_plot = sys.argv[2]
-    desire_value = sys.argv[3]
+    desire_value = sys.argv[3] # MUST pass dummy value if the which_plot doesn't need one
     new_or_time_averaged_or_plotting_or_replotting = sys.argv[4]
 
     # Try reading in the file if it exists
