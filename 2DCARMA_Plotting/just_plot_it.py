@@ -21,7 +21,7 @@ def main():
     file_path = sys.argv[1]  # Get the file path from the command-line arguments
     new_or_time_averaged_or_plotting_or_replotting = int(sys.argv[2])
     which_plot = sys.argv[3]
-    desire_value = sys.argv[4] # MUST pass dummy value if the which_plot doesn't need one
+    desire_value = float(sys.argv[4]) # MUST pass dummy value if the which_plot doesn't need one
     #TODO: will add so that more values can be passed
 
     # Try reading in the file if it exists
@@ -32,9 +32,21 @@ def main():
         print(f"Error: {e}")
         sys.exit(1)
 
+    #See if the output file is established
+    outfile_loc = check_for_outpath(file_locs_and_names_dict,'outfile')
+
+    #Allow the user to establish a different run_name, otherwise just use the infile_name
+    run_name = check_for_run_name(file_locs_and_names_dict,'run_name')
+
+    cloud_properties_file_path = check_for_inpath(file_locs_and_names_dict,'cloud_properties_file')
+
+    cloud_materials_file_path = check_for_inpath(file_locs_and_names_dict,'cloud_materials_file')
+        
     if new_or_time_averaged_or_plotting_or_replotting == 1:
         # This is a brand new attempt at plotting
         # So need to run the read in routine
+
+        print('Option 1 start')
 
         # Need to make sure input file names and locations
         # have been provided
@@ -45,22 +57,17 @@ def main():
         # to no headers in the 2DCARMA output
         longitudes_path = check_for_inpath(file_locs_and_names_dict,'longitudes')
 
-        cloud_properties_file_path = check_for_inpath(file_locs_and_names_dict,'cloud_properties_file')
-
-        cloud_materials_file_path = check_for_inpath(file_locs_and_names_dict,'cloud_materials_file')
-
-        #See if the output file is established
-        outfile_loc = check_for_outpath(file_locs_and_names_dict,'outfile')
-
-        #Allow the user to establish a different run_name, otherwise just use the infile_name
-        run_name = check_for_run_name(file_locs_and_names_dict,'run_name')
-        
         # OK finally do the read in
         saved_dict_paths_list = read_in_for_2DCARMA(infile_path,longitudes_path,outfile_loc,run_name,\
                                                 cloud_properties_file_path,cloud_materials_file_path)
 
+        print('Option 1 end\n')
+
     if new_or_time_averaged_or_plotting_or_replotting <= 2:
         # Have just read in so saved_dict_paths_list is defined
+
+        print('Option 2 start')
+
         if new_or_time_averaged_or_plotting_or_replotting == 1:
             # do time averaging, this loads the neccessary dicts and averages them
             pass
@@ -71,11 +78,21 @@ def main():
             #sort it as we want in alphabetical oreder (global_cloud_prop, mmr, svp)
             saved_dict_paths_list.sort()
         
-        saved_time_averaged_dict_paths_list = do_time_averaging(saved_dict_paths_list,outfile_loc,run_name)
+        #load in the dictionaries
+        loaded_dicts_list = []
+        for saved_dict_path in saved_dict_paths_list:
+            loaded_dict = np.load(saved_dict_path)
+            loaded_dicts_list.append(loaded_dict)
+        
+        saved_time_averaged_dict_paths_list = do_time_averaging(loaded_dicts_list,outfile_loc,run_name)
+
+        print('Option 2 end\n')
 
     if new_or_time_averaged_or_plotting_or_replotting <= 3:
         # Has already done the time averaging and saved_dict_paths are defined
         # just have to run the plotting scripts
+        print('Option 3 start')
+
         if new_or_time_averaged_or_plotting_or_replotting <= 2:
             pass
         else: #everything up to time averaging done in the past
@@ -86,30 +103,34 @@ def main():
         # for now I'm going to make it always plot all groups seperately
         # TODO: also add so that when it does the loop it makes the combined figure
         cloud_properties_dict = read_cloud_properties(cloud_properties_file_path)
-        group_name_list = cloud_properties_dict.keys()
+        group_name_list = cloud_properties_dict['group_name']
 
         # For now only cloud property plots are supported
         # TODO: Add an option here based on the which_plot
-        loaded_dict = saved_time_averaged_dict_paths_list[0]
+        loaded_dict = np.load(saved_time_averaged_dict_paths_list[0])
 
         groups_with_errors = []
         for group_name in group_name_list:
-            try:
-                plotter(loaded_dict,group_name,which_plot,desire_value,outfile_loc,run_name)
-            except:
-                print(f'Error with plotting group: {group_name}')
-                groups_with_errors.append(group_name)
+            #ry:
+            plotter(loaded_dict,group_name,which_plot,desire_value,outfile_loc,run_name,cloud_properties_dict)
+            #except:
+            #    print(f'Error with plotting group: {group_name}')
+            #    groups_with_errors.append(group_name)
 
         print('Finished running script. Errors with plotting:')
         for e in groups_with_errors:
             print(e)
+
+        print('Option 3 end\n')
 
     if new_or_time_averaged_or_plotting_or_replotting <= 4:
         # already done all the plotting before,
         # but probably want to change something
         # about the figure
         #TODO: replotter function
-        pass
+        print('Option 4 start')
+
+        print('Option 4 end\n')
 
     return
 

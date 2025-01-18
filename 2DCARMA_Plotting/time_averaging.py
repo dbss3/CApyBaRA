@@ -3,11 +3,11 @@ from save_arrays import output_dictionary_to_compressed_npzfile
   
 ########################################################
 # routine to time average the 2D read in arrays
-def do_time_averaging(saved_dict_paths_list,outfile_loc,run_name):
+def do_time_averaging(loaded_dicts_list,outfile_loc,run_name):
     print('Unpack the saved dict')
     # Need the axis arrays, i.e. pressure, longitude, long_count, r
     # for this just going to use the first one (should be cloud_properties)
-    axis_arrays_dict = np.load(saved_dict_paths_list[0])
+    axis_arrays_dict = loaded_dicts_list[0]
     
     # Ok now unpack the axis arrays from this dictionary
     pressure_array = axis_arrays_dict['pressure_array']
@@ -18,9 +18,9 @@ def do_time_averaging(saved_dict_paths_list,outfile_loc,run_name):
     print('Longitude count array:',longitude_count_array)
 
     # Ok and then need to reconstruct the other dictionaries from the saved file
-    temporal_global_cloud_dict = {key:value for key,value in saved_dict_paths_list[0].items()  if '_array' not in key}
-    mmr_cloud_element_dict     = {key:value for key,value in saved_dict_paths_list[1].items()  if '_array' not in key}
-    svp_cloud_element_dict     = {key:value for key,value in saved_dict_paths_list[2].items()  if '_array' not in key}
+    temporal_global_cloud_dict = {key:value for key,value in loaded_dicts_list[0].items()  if '_array' not in key}
+    mmr_cloud_element_dict     = {key:value for key,value in loaded_dicts_list[1].items()  if '_array' not in key}
+    svp_cloud_element_dict     = {key:value for key,value in loaded_dicts_list[2].items()  if '_array' not in key}
 
     print('Finished unpacking saved npz files')
 

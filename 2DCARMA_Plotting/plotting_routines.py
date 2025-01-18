@@ -17,12 +17,14 @@ def unpacking_arrays_from_loaded_dict(loaded_dict,group_properties_dict,group_na
 	#print(pressure_array)
 
 	#Need to determine axis for the group to select the appropriate bin sizes and the mass number density
-	group_name_list = group_properties_dict.keys()
+	group_name_list = group_properties_dict['group_name']
 	group_index = group_name_list.index(group_name)
 
 	time_averaged_global_specific_group_array = loaded_dict[group_name]
 	specific_group_r_array = r_array[:,group_index]
-	specific_group_properties_dict = group_properties_dict[group_name]
+
+	# create a dictionary for the specific group
+	specific_group_properties_dict = {key:value[group_index] for key, value in group_properties_dict.items()}
 	print(specific_group_properties_dict.items())
 
 	return time_averaged_global_specific_group_array, specific_group_properties_dict, specific_group_r_array, pressure_array, longitudes_array
@@ -164,7 +166,7 @@ def r_vs_p_total_numb_contour_plot(axis,group_name,desired_longitude,loaded_dict
 
 ########################################################
 # plotting wrapping routines
-def plotter(loaded_dict,group_name,which_plot,desire_value,outfile_loc,run_name):
+def plotter(loaded_dict,group_name,which_plot,desire_value,outfile_loc,run_name,group_properties_dict):
 	# save the figures, WANT TO also make it so that this
 	# saves the arrays that are plotted, so axes etc can be 
 	# fixed more easily
@@ -173,7 +175,7 @@ def plotter(loaded_dict,group_name,which_plot,desire_value,outfile_loc,run_name)
 	if which_plot == 'lon_vs_r_numb_contour':
 		print(f'Plotting lon vs r, numb den for {group_name}')
 		contour_object, X_grid, Y_grid, contour_value_array = \
-			lon_vs_r_numb_contour_plot(ax,group_name,desire_value,loaded_dict)
+			lon_vs_r_numb_contour_plot(ax,group_name,desire_value,loaded_dict,group_properties_dict)
 		cbar = plt.colorbar(contour_object)
 		cbar.set_label(r'Number Density [cm$^{-3}$]', rotation=-90, labelpad=30) #fontsize=20
 		ax.set_xlabel(r'Longitude [degree]')
@@ -187,7 +189,7 @@ def plotter(loaded_dict,group_name,which_plot,desire_value,outfile_loc,run_name)
 	elif which_plot == 'lon_vs_p_total_numb_contour':
 		print(f'Plotting lon vs press, numb den for {group_name}')
 		contour_object, X_grid, Y_grid, contour_value_array = \
-			lon_vs_p_total_numb_contour_plot(ax,group_name,loaded_dict)
+			lon_vs_p_total_numb_contour_plot(ax,group_name,loaded_dict,group_properties_dict)
 		cbar = plt.colorbar(contour_object)
 		cbar.set_label(r'Integrated Number Density [--]', rotation=-90, labelpad=30) #fontsize=20
 		ax.set_xlabel(r'Longitude [degree]')
@@ -206,7 +208,7 @@ def plotter(loaded_dict,group_name,which_plot,desire_value,outfile_loc,run_name)
 	elif which_plot == 'r_vs_p_total_numb_contour':
 		print(f'Plotting r vs press, numb den for {group_name}')
 		contour_object, X_grid, Y_grid, contour_value_array = \
-			r_vs_p_total_numb_contour_plot(ax,group_name,desire_value,loaded_dict)
+			r_vs_p_total_numb_contour_plot(ax,group_name,desire_value,loaded_dict,group_properties_dict)
 		cbar = plt.colorbar(contour_object)
 		cbar.set_label(r'Integrated Number Density [--]', rotation=-90, labelpad=30) #fontsize=20
 		ax.set_xlabel(r'Particle Radius [$\mu$m]')

@@ -15,4 +15,4 @@ WASP-52b_clear_1xsolar_1Kzz # file must end in .txt
 longitudes_WASP-52b_clear_1xsolar # file must end in .txt
 
 ! outfile_loc
-.
+./test/output

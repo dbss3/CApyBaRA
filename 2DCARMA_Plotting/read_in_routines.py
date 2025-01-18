@@ -67,57 +67,69 @@ def load_txt_file(file_name):
 
 
 def read_cloud_properties(file_name):
-    """
-    Parses a structured text file into a dictionary based on a key header line,
-    ignoring comments (#) and processing the cloud_elements_list as a list of strings.
-    
-    Parameters:
-        file_name (str): The name of the text file to parse.
-    
-    Returns:
-        dict: A dictionary where keys are taken from the header line starting with '!',
-              and values are lists of strings parsed from the lines.
-    """
-    parsed_data_dict = {}
-    header_key = None
+	"""
+	Parses a structured text file into a dictionary based on a key header line,
+	ignoring comments (#) and processing the cloud_elements_list as a list of strings.
 
-    try:
-        with open(file_name, 'r') as file:
-            for line in file:
-                # Remove comments starting with #
-                line = line.split("#")[0].strip()
-                
-                # Ignore empty lines
-                if not line:
-                    continue
-                
-                # Identify header key
-                if line.startswith("!"):
-                    header_key = line[1:].strip()  # Remove '!' and strip whitespace
-                    parsed_data_dict[header_key] = []
-                    continue
-                
-                # Process data lines
-                if header_key:
-                    parts = line.split(",")
-                    # Strip whitespace from each part
-                    parts = [part.strip() for part in parts]
-                    
-                    # Extract and process the cloud_elements_list (last part)
-                    if parts[-1].startswith("[") and parts[-1].endswith("]"):
-                        cloud_elements = parts[-1][1:-1].split(",")  # Remove brackets and split
-                        cloud_elements = [el.strip() for el in cloud_elements]  # Strip each element
-                        parts[-1] = cloud_elements
-                    
-                    # Append processed line to the list under the current key
-                    parsed_data_dict[header_key].append(parts)
-    
-    except FileNotFoundError:
-        print(f"Error: The file {file_name} was not found.")
-    except Exception as e:
-        print(f"An error occurred: {e}")
-    
-    return parsed_data_dict
+	Parameters:
+		file_name (str): The name of the text file to parse.
+
+	Returns:
+		dict: A dictionary where keys are taken from the header line starting with '!',
+				and values are lists of strings parsed from the lines.
+	"""
+	header_keys = None
+	data_list = []
+
+	try:
+		with open(file_name, 'r') as file:
+			for line in file:
+				# Remove comments starting with #
+				line = line.split("#")[0].strip()
+				
+				# Ignore empty lines
+				if not line:
+					continue
+				
+				# Identify header key
+				if line.startswith("!"):
+					header_keys = line[1:].strip().split(',')  # Remove '!' and strip whitespace
+					continue #continue means loop not continue, stupid
+				
+				# Process data lines
+				if len(header_keys) != 0:
+					parts = line.split(",")
+					# Strip whitespace from each part
+					parts = [part.strip() for part in parts]
+					
+					# Extract and process the cloud_elements_list (last part)
+					if parts[-1].startswith("[") and parts[-1].endswith("]"):
+						cloud_elements = parts[-1][1:-1].split(",")  # Remove brackets and split
+						cloud_elements = [el.strip() for el in cloud_elements]  # Strip each element
+						parts[-1] = cloud_elements
+					
+					data_list.append(parts)
+					#print(parts)
+
+			# finally combine into an actual dictionary
+			print(header_keys)
+			print(data_list)
+			data_list_transpose = [list(row) for row in zip(*data_list)]
+			print(data_list_transpose)
+			#have to transpose the list somehow (can't use numpy)
+			#to get this
+			parsed_data_dict = dict(zip(header_keys,data_list_transpose))
+			for key, value in parsed_data_dict.items():
+				print(key)
+				print(value)
+				print('')
+
+	except FileNotFoundError:
+		print(f"Error: The file {file_name} was not found.")
+	except Exception as e:
+		print(f"An error occurred: {e}")
+
+	return parsed_data_dict
 
 
 def read_in_for_2DCARMA(infile_path,longitudes_path,outfile_loc,run_name,cloud_properties_file_path,cloud_materials_file_path):
@@ -133,7 +145,7 @@ def read_in_for_2DCARMA(infile_path,longitudes_path,outfile_loc,run_name,cloud_p
 	cloud_properties_dict = read_cloud_properties(cloud_properties_file_path)
 
 	# The groups are their own individual entries in the dictionary
-	group_name_list = cloud_properties_dict.keys()
+	group_name_list = cloud_properties_dict['group_name']
 	print(f'Read in expected group names: {group_name_list}')
     
 	# Have to do a bit more work to get the unique materials comprising the clouds
@@ -286,10 +298,12 @@ def read_in_for_2DCARMA(infile_path,longitudes_path,outfile_loc,run_name,cloud_p
 					temporal_mmr_cloud_element_dict[cloud_element][k,long_index,i] *= pressure_array[k]*pressure_to_bar**2
 					temporal_svp_cloud_element_dict[cloud_element][k,long_index,i] *= pressure_array[k]*pressure_to_bar**2
 
-	print('Finally Read-in complete')
+	print('Finally Read-in complete\n')
       
 	########################################################
 	# Save the full data to compressed npz
+
+	print('Begining saving data')
 
 	dicts_to_save_dict = {'temporal_global_cloud_properties': temporal_global_cloud_dict,
 					      'temporal_mmr_cloud_element_properties':  temporal_mmr_cloud_element_dict,
@@ -298,8 +312,11 @@ def read_in_for_2DCARMA(infile_path,longitudes_path,outfile_loc,run_name,cloud_p
 	
 	saved_dict_paths_list = []
 	for dict_name, dict in dicts_to_save_dict.items():
+		print(f'saving: {dict_name}')
 		saved_dict_path = output_dictionary_to_compressed_npzfile(pressure_array,longitudes_array,r_array,longitude_count_array,
 								dict,dict_name,outfile_loc,run_name)
 		saved_dict_paths_list.append(saved_dict_path)
-            
+		print('saved\n')
+	
+	print('saving complete. Read in Complete\n')
 	return saved_dict_paths_list

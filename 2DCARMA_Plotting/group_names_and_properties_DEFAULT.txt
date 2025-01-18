@@ -1,6 +1,6 @@
 # Short names of the groups in the default 2D CARMA runs
 # Based on what is used in Powell & Zhang 2024
-! group_name, mass, colour, elements_list
+! group_name,mass,group_colour,elements_list
 pure_tio2,	 M_TIO2,	Blues,   [tio2]
 het_fe,      M_FE,  	Reds,    [tio2,fe]
 het_mg2sio4, M_MG2SIO4,	Purples, [tio2,mg2sio4]
