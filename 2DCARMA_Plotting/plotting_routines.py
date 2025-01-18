@@ -4,8 +4,7 @@ from matplotlib.colors import LogNorm
 from constants import pressure_to_bar
 
 ########################################################
-# Scripts that do the calculations for the various kinds of plots
-
+# Scripts that do repeated processes for all the various kinds of plots
 def unpacking_arrays_from_loaded_dict(loaded_dict,group_properties_dict,group_name):
 	#unpack some of the arrays from the dictionary
 	pressure_array = loaded_dict['pressure_array']
@@ -59,7 +58,9 @@ def handle_zeros_and_make_levels(contour_value_array):
 	
 	return contour_value_array, levels
 
-def cloud_contour_plot_cartesian_longitude_pressure(axis,group_name,loaded_dict,group_properties_dict,mass_or_numb_density = 'numb',alpha=0.75):
+########################################################
+# Individual plotting scripts
+def lon_vs_p_total_numb_contour_plot(axis,group_name,loaded_dict,group_properties_dict):
 	# plan is to make a function that handles the plotting of the contours,
 	# and hand it the axis to plot to, so can stack materials easily and also
 	# make their own plots by different calls to this function
@@ -88,11 +89,11 @@ def cloud_contour_plot_cartesian_longitude_pressure(axis,group_name,loaded_dict,
 	# Plot to the desired axis
 	contour_object = axis.contourf(X_grid, Y_grid, contour_value_array,
 				norm=LogNorm(), cmap=specific_group_properties_dict['group_colour'], 
-				alpha=alpha, levels = levels)
+				  levels = levels) #alpha=alpha,
 
 	return contour_object, X_grid, Y_grid, contour_value_array
 
-def cloud_contour_plot_cartesian_longitude_particle_bin(axis,group_name,desired_pressure,loaded_dict,group_properties_dict,mass_or_numb_density = 'numb',alpha=0.75):
+def lon_vs_r_numb_contour_plot(axis,group_name,desired_pressure,loaded_dict,group_properties_dict):
 	# plan is to make a function that handles the plotting of the contours,
 	# and hand it the axis to plot to, so can stack materials easily and also
 	# make their own plots by different calls to this function
@@ -105,20 +106,12 @@ def cloud_contour_plot_cartesian_longitude_particle_bin(axis,group_name,desired_
 	#And now need to pick the level closest to the desired pressure
 	press_index = np.argmin(np.abs(pressure_array-desired_pressure)) #make sure they have the same units!
 
+	#renaming for convenience, when doing mass and number density need same name
 	time_averaged_specific_level_specific_group_array = time_averaged_global_specific_group_array[press_index]
 	#An explanation: This last array has 2 dimensions: (nbin,ilong)
 
-	# Now determine the particle_mass_density array OR *_number_denisty_array
-	# For the selected group index, and pressure_index
-	# choice of mass or number density
-	if mass_or_numb_density == 'numb':
-		contour_value_array = time_averaged_specific_level_specific_group_array
-	elif mass_or_numb_density == 'mass':
-		# Have to convert using material_density*4pi/3*r^3
-		contour_value_array = time_averaged_specific_level_specific_group_array*(specific_group_properties_dict['group_density']*((4./3.)*np.pi*(specific_group_r_array*1e-4)**3.))
-	else:
-		print('Invalid value for mass_or_numb_density, please pick mass or numb, not: ',mass_or_numb_density)
-	
+	contour_value_array = time_averaged_specific_level_specific_group_array
+
 	# handle zero values, which cause problems with log scale,
 	# then also generate appropriate levels
 	contour_value_array, levels = handle_zeros_and_make_levels(contour_value_array)
@@ -129,11 +122,11 @@ def cloud_contour_plot_cartesian_longitude_particle_bin(axis,group_name,desired_
 	# Plot to the desired axis
 	contour_object = axis.contourf(X_grid, Y_grid, contour_value_array,
 			      norm=LogNorm(), cmap=specific_group_properties_dict['group_colour'], 
-				  alpha=alpha) #, levels = levels)
+				  levels = levels) #alpha=alpha,
 
 	return contour_object, X_grid, Y_grid, contour_value_array
 
-def cloud_contour_plot_cartesian_particle_bin_pressure(axis,group_name,desired_longitude,loaded_dict,group_properties_dict,mass_or_numb_density = 'numb',alpha=0.75,opening_angle=20):
+def r_vs_p_total_numb_contour_plot(axis,group_name,desired_longitude,loaded_dict,group_properties_dict,opening_angle=20):
 	# plan is to make a function that handles the plotting of the contours,
 	# and hand it the axis to plot to, so can stack materials easily and also
 	# make their own plots by different calls to this function
@@ -165,22 +158,22 @@ def cloud_contour_plot_cartesian_particle_bin_pressure(axis,group_name,desired_l
 	# Plot to the desired axis
 	contour_object = axis.contourf(X_grid, Y_grid, contour_value_array,
 			      norm=LogNorm(), cmap=specific_group_properties_dict['group_colour'], 
-				  alpha=alpha) #, levels = levels)
+				  levels = levels) #alpha=alpha,
 
 	return contour_object, X_grid, Y_grid, contour_value_array
 
 ########################################################
 # plotting wrapping routines
-def plotter(group_name,desire_value,loaded_dict,which_plot):
+def plotter(loaded_dict,group_name,which_plot,desire_value,outfile_loc,run_name):
 	# save the figures, WANT TO also make it so that this
 	# saves the arrays that are plotted, so axes etc can be 
 	# fixed more easily
 	fig, ax = plt.subplots(nrows = 1, ncols = 1)
 
-	if which_plot == 'longitude_particle_bin_contour':
-		print(f'Plotting lon vs num den for {group_name}')
+	if which_plot == 'lon_vs_r_numb_contour':
+		print(f'Plotting lon vs r, numb den for {group_name}')
 		contour_object, X_grid, Y_grid, contour_value_array = \
-			cloud_contour_plot_cartesian_longitude_particle_bin(ax,group_name,desire_value,loaded_dict)
+			lon_vs_r_numb_contour_plot(ax,group_name,desire_value,loaded_dict)
 		cbar = plt.colorbar(contour_object)
 		cbar.set_label(r'Number Density [cm$^{-3}$]', rotation=-90, labelpad=30) #fontsize=20
 		ax.set_xlabel(r'Longitude [degree]')
@@ -188,13 +181,13 @@ def plotter(group_name,desire_value,loaded_dict,which_plot):
 		ax.set_yscale('log')
 		#ax.set_xlim(min(longitudes_array),max(longitudes_array))
 		#ax.set_ylim(1,min(pressure_array/1.e6))
-		save_name = f'particle_bin_of_{group_name}_at_{desire_value}bar'
+		save_name = f'{run_name}_{which_plot}_of_{group_name}_at_{desire_value}bar'
 
 
-	elif which_plot == 'longitude_pressure_contour':
-		print(f'Plotting lon vs pressure for {group_name}')
+	elif which_plot == 'lon_vs_p_total_numb_contour':
+		print(f'Plotting lon vs press, numb den for {group_name}')
 		contour_object, X_grid, Y_grid, contour_value_array = \
-			cloud_contour_plot_cartesian_longitude_pressure(ax,group_name,loaded_dict)
+			lon_vs_p_total_numb_contour_plot(ax,group_name,loaded_dict)
 		cbar = plt.colorbar(contour_object)
 		cbar.set_label(r'Integrated Number Density [--]', rotation=-90, labelpad=30) #fontsize=20
 		ax.set_xlabel(r'Longitude [degree]')
@@ -208,12 +201,12 @@ def plotter(group_name,desire_value,loaded_dict,which_plot):
 		ax.set_xticks(lon_ticks)
 		ax.set_xticklabels(lon_ticks)
 		plt.gca().invert_yaxis()
-		save_name = f'integrated_number_density_of_{group_name}'
+		save_name = f'{run_name}_{which_plot}_of_{group_name}'
 
-	elif which_plot == 'particle_bin_pressure_contour':
-		print(f'Plotting num den vs press for {group_name}')
+	elif which_plot == 'r_vs_p_total_numb_contour':
+		print(f'Plotting r vs press, numb den for {group_name}')
 		contour_object, X_grid, Y_grid, contour_value_array = \
-			cloud_contour_plot_cartesian_particle_bin_pressure(ax,group_name,desire_value,loaded_dict)
+			r_vs_p_total_numb_contour_plot(ax,group_name,desire_value,loaded_dict)
 		cbar = plt.colorbar(contour_object)
 		cbar.set_label(r'Integrated Number Density [--]', rotation=-90, labelpad=30) #fontsize=20
 		ax.set_xlabel(r'Particle Radius [$\mu$m]')
@@ -223,23 +216,34 @@ def plotter(group_name,desire_value,loaded_dict,which_plot):
 		#ax.set_xlim(min(longitudes_array),max(longitudes_array))
 		#ax.set_ylim(1,min(Y_grid/1.e6))
 		plt.gca().invert_yaxis()
-		save_name = f'integrated_number_density_of_{group_name}_at_{desire_value}deg'
+		save_name = f'{run_name}_{which_plot}_of_{group_name}_at_{desire_value}deg'
 	else:
 		print('Please pick a valid type of plot:')
+		print('Atm mass densities are NOT supported')
 		print('')
 	
 	# Save the figures
-	plt.savefig(f'{save_name}.pdf', format = 'pdf', bbox_inches='tight')
+	plt.savefig(f'{outfile_loc}/{save_name}.pdf', format = 'pdf', bbox_inches='tight')
 	print('Figure Saved \n')
 
 	# Close whatever the figure plotted was
 	plt.close()
 
 	# Save the arrays:
-	np.savez_compressed(save_name,
+	np.savez_compressed(f'{outfile_loc}/{save_name}.npz',
 						X_grid = X_grid,
 						Y_grid = Y_grid,
 						contour_value_array = contour_value_array
 						)
 
 	return
+
+
+'''
+# For when I want to implement mass density routines
+	elif mass_or_numb_density == 'mass':
+		# Have to convert using material_density*4pi/3*r^3
+		contour_value_array = time_averaged_specific_level_specific_group_array*(specific_group_properties_dict['group_density']*((4./3.)*np.pi*(specific_group_r_array*1e-4)**3.))
+	else:
+		print('Invalid value for mass_or_numb_density, please pick mass or numb, not: ',mass_or_numb_density)
+'''

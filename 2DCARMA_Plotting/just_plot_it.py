@@ -1,7 +1,7 @@
 import numpy as np
 import os, sys
 import glob
-from read_in_routines import read_in_for_2DCARMA, read_file_to_dict
+from read_in_routines import read_in_for_2DCARMA, read_file_to_dict, read_cloud_properties
 from time_averaging import do_time_averaging
 from plotting_routines import plotter
 
@@ -13,14 +13,15 @@ def main():
     """
 
     # Ensure exactly one argument is provided
-    if len(sys.argv) != 4:
-        print("Usage: python3 just_plot_it.py <file_path> <which_plot> <new_or_time_averaged_or_plotting_or_replotting=1,2,3,4>")
+    if len(sys.argv) != 5:
+        print("Usage: python3 just_plot_it.py <file_path> <which_plot> <desire_value> <new_or_time_averaged_or_plotting_or_replotting=1,2,3,4>")
         sys.exit(1)
 
     # read in system argumnts
     file_path = sys.argv[1]  # Get the file path from the command-line arguments
     which_plot = sys.argv[2]
-    new_or_time_averaged_or_plotting_or_replotting = sys.argv[3]
+    desire_value = sys.argv[3]
+    new_or_time_averaged_or_plotting_or_replotting = sys.argv[4]
 
     # Try reading in the file if it exists
     try:
@@ -54,42 +55,53 @@ def main():
         run_name = check_for_run_name(file_locs_and_names_dict,'run_name')
         
         # OK finally do the read in
-        if cloud_properties_file_path != 'use_default' and cloud_materials_file_path != 'use_default':
-            saved_dict_paths_list = read_in_for_2DCARMA(infile_path,longitudes_path,outfile_loc,run_name,\
-            cloud_properties_file_path=cloud_properties_file_path,
-            cloud_materials_file_path=cloud_materials_file_path)
-        elif cloud_properties_file_path == 'use_default' and cloud_materials_file_path != 'use_default':
-            saved_dict_paths_list = read_in_for_2DCARMA(infile_path,longitudes_path,outfile_loc,run_name,\
-            cloud_materials_file_path=cloud_materials_file_path)
-        elif cloud_properties_file_path != 'use_default' and cloud_materials_file_path == 'use_default':
-            saved_dict_paths_list = read_in_for_2DCARMA(infile_path,longitudes_path,outfile_loc,run_name,\
-            cloud_properties_file_path=cloud_properties_file_path)
-        else: # Using the default files
-            saved_dict_paths_list = read_in_for_2DCARMA(infile_path,longitudes_path,outfile_loc,run_name)
+        saved_dict_paths_list = read_in_for_2DCARMA(infile_path,longitudes_path,outfile_loc,run_name,\
+                                                cloud_properties_file_path,cloud_materials_file_path)
 
     if new_or_time_averaged_or_plotting_or_replotting <= 2:
         # Have just read in so saved_dict_paths_list is defined
         if new_or_time_averaged_or_plotting_or_replotting == 1:
             # do time averaging, this loads the neccessary dicts and averages them
-            saved_time_averaged_dict_paths_list = do_time_averaging(saved_dict_paths_list,outfile_loc,run_name)
+            pass
         else: # Need to go get the files that MUST exist already
             # Have already read in once, so just need to get the paths from the outfile_loc 
             # glob it up time Mr globby
             saved_dict_paths_list = glob.glob(f'{outfile_loc}/temporal_*.npz')
             #sort it as we want in alphabetical oreder (global_cloud_prop, mmr, svp)
             saved_dict_paths_list.sort()
-            saved_time_averaged_dict_paths_list = do_time_averaging(saved_dict_paths_list,outfile_loc,run_name)
+        
+        saved_time_averaged_dict_paths_list = do_time_averaging(saved_dict_paths_list,outfile_loc,run_name)
 
     if new_or_time_averaged_or_plotting_or_replotting <= 3:
         # Has already done the time averaging and saved_dict_paths are defined
         # just have to run the plotting scripts
         if new_or_time_averaged_or_plotting_or_replotting <= 2:
-            plotter
+            pass
         else: #everything up to time averaging done in the past
             #glob me up scotty some time averaged files
             saved_time_averaged_dict_paths_list = glob.glob(f'{outfile_loc}/time_averaged_*.npz')
             saved_time_averaged_dict_paths_list.sort()
-            plotter
+
+        # for now I'm going to make it always plot all groups seperately
+        # TODO: also add so that when it does the loop it makes the combined figure
+        cloud_properties_dict = read_cloud_properties(cloud_properties_file_path)
+        group_name_list = cloud_properties_dict.keys()
+
+        # For now only cloud property plots are supported
+        # TODO: Add an option here based on the which_plot
+        loaded_dict = saved_time_averaged_dict_paths_list[0]
+
+        groups_with_errors = []
+        for group_name in group_name_list:
+            try:
+                plotter(loaded_dict,group_name,which_plot,desire_value,outfile_loc,run_name)
+            except:
+                print(f'Error with plotting group: {group_name}')
+                groups_with_errors.append(group_name)
+
+        print('Finished running script. Errors with plotting:')
+        for e in groups_with_errors:
+            print(e)
 
     if new_or_time_averaged_or_plotting_or_replotting <= 4:
         # already done all the plotting before,
@@ -122,10 +134,19 @@ def check_for_inpath(file_locs_and_names_dict,file_str):
         if file_str == 'infile' or file_str == 'longitudes':
             print('please check your file_names_and_locs.txt file')
             quit()
-        else:
-            print('However, this is a non-crucial file,')
+        elif file_str == 'cloud_properties_file_path':
+            print('however, this is a non-crucial file,')
             print('will default to the DEFAULT inputs.')
-            path = 'use_default'
+            path = './group_names_and_properties_DEFAULT.txt'
+            print(path)
+        elif file_str == 'cloud_materials_file_path':
+            print('however, this is a non-crucial file,')
+            print('will default to the DEFAULT inputs.')
+            path = './cloud_material_DEFAULT.txt'
+            print(path)
+        else:
+            print('uh oh, invalid file_str')
+            quit()
 
     # if crucial file, also check that the file exists
     if file_str == 'infile' or file_str == 'longitudes':

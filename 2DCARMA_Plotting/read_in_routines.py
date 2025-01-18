@@ -120,7 +120,7 @@ def read_cloud_properties(file_name):
     return parsed_data_dict
 
 
-def read_in_for_2DCARMA(infile_path,longitudes_path,outfile_loc,run_name,cloud_properties_file_path='./group_names_and_properties_DEFAULT.txt',cloud_materials_file_path='./cloud_material_DEFAULT.txt'):
+def read_in_for_2DCARMA(infile_path,longitudes_path,outfile_loc,run_name,cloud_properties_file_path,cloud_materials_file_path):
 	########################################################
 	# For now I need the to read in the longitudes seperately to get 
 	# the number of longitudes, I will be adding this to 2DCARMA output
