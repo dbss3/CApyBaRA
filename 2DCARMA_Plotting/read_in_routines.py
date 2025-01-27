@@ -7,63 +7,69 @@ from save_arrays import output_dictionary_to_compressed_npzfile
 # Functions to do the actual read in of the files
 
 def read_file_to_dict(file_path):
-    """
-    Reads a file and parses it into a dictionary. Lines starting with '#' are ignored,
-    and lines starting with '!' are treated as keys, with the following line as the corresponding value.
+	"""
+	Reads a file and parses it into a dictionary. Lines starting with '#' are ignored,
+	and lines starting with '!' are treated as keys, with the following line as the corresponding value.
 
-    :param file_path: Path to the input file
-    :return: Dictionary with keys and values parsed from the file
-    """
-    file_locs_and_names_dict = {}
-    
-    with open(file_path, 'r') as file:
-        lines = file.readlines()
-        
-    # Clean up lines and filter out comments
-    clean_lines = []
-    for line in lines:
-        stripped_line = line.split('#')[0].strip()  # Remove comments and trim whitespace
-        if stripped_line:  # Skip empty lines
-            clean_lines.append(stripped_line)
-    
-    # Iterate through lines to build the dictionary
-    i = 0
-    while i < len(clean_lines):
-        if clean_lines[i].startswith('!'):
-            key = clean_lines[i][1:].strip()  # Remove '!' and strip whitespace
-            if i + 1 < len(clean_lines):  # Check if there's a next line
-                value = clean_lines[i + 1].strip()
-                file_locs_and_names_dict[key] = value
-                i += 2  # Skip the next line since it's the value
-            else:
-                raise ValueError(f"Missing value for key '{key}' in the file.")
-        else:
-            i += 1  # Continue to the next line
-    
-    return file_locs_and_names_dict
+	:param file_path: Path to the input file
+	:return: Dictionary with keys and values parsed from the file
+	"""
+	file_locs_and_names_dict = {}
+	
+	with open(file_path, 'r') as file:
+		lines = file.readlines()
+		
+	# Clean up lines and filter out comments
+	clean_lines = []
+	for line in lines:
+		stripped_line = line.split('#')[0].strip()  # Remove comments and trim whitespace
+		if stripped_line:  # Skip empty lines
+			clean_lines.append(stripped_line)
+	
+	# Iterate through lines to build the dictionary
+	for clean_line in clean_lines:
+		if clean_line.startswith('!'):
+			key = clean_line[1:].strip()  # Remove '!' and strip whitespace
+			file_locs_and_names_dict[key] = []
+		else: #means its a value line, hopefully the previous cleaning has worked
+			value = clean_line.strip()  # Strip whitespace
+			file_locs_and_names_dict[key].append(value)
+	
+	#Now go through the dict and clean up the lists to be strings unless multi values
+	for key, value in file_locs_and_names_dict.items():
+		if len(value) == 0:
+			print(f'Error: key {key} has no specified value')
+			quit()
+		elif len(value) == 1: #only one entry so setting to string
+			file_locs_and_names_dict[key] = value[0]
+		else:
+			#leaving list
+			pass
+	
+	return file_locs_and_names_dict
 
 def load_txt_file(file_name):
-    """
-    Reads a text file and returns a list of strings from each line,
-    ignoring lines that start with '#'.
+	"""
+	Reads a text file and returns a list of strings from each line,
+	ignoring lines that start with '#'.
 	# Generated using CHAT GPT
-    
-    Parameters:
-        file_name (str): The name of the text file to read.
-    
-    Returns:
-        list: A list of strings for each line not starting with '#'.
-    """
-    result = []
-    try:
-        with open(file_name, 'r') as file:
-            for line in file:
-                stripped_line = line.strip()
-                if not stripped_line.startswith("#"):
-                    result.append(stripped_line)
-    except FileNotFoundError:
-        print(f"Error: The file {file_name} was not found.")
-    return result
+	
+	Parameters:
+		file_name (str): The name of the text file to read.
+	
+	Returns:
+		list: A list of strings for each line not starting with '#'.
+	"""
+	result = []
+	try:
+		with open(file_name, 'r') as file:
+			for line in file:
+				stripped_line = line.strip()
+				if not stripped_line.startswith("#"):
+					result.append(stripped_line)
+	except FileNotFoundError:
+		print(f"Error: The file {file_name} was not found.")
+	return result
 
 
 def read_cloud_properties(file_name):
@@ -147,14 +153,14 @@ def read_in_for_2DCARMA(infile_path,longitudes_path,outfile_loc,run_name,cloud_p
 	# The groups are their own individual entries in the dictionary
 	group_name_list = cloud_properties_dict['group_name']
 	print(f'Read in expected group names: {group_name_list}')
-    
+	
 	# Have to do a bit more work to get the unique materials comprising the clouds
 	# Will work in the future when the output has headers
 
 	#But ordering matters here, for now just reading in an ordered seperate file,
 	cloud_element_list = load_txt_file(cloud_materials_file_path)
-    #TODO: OK THIS FILE IS REALLY CONFUSING, its just read in now for consistency
-    # with the code, but these arrays I don't use atm, and I don't know what they are
+	#TODO: OK THIS FILE IS REALLY CONFUSING, its just read in now for consistency
+	# with the code, but these arrays I don't use atm, and I don't know what they are
 
 	########################################################
 	# The file this one reads in is the main one, 
@@ -177,7 +183,7 @@ def read_in_for_2DCARMA(infile_path,longitudes_path,outfile_loc,run_name,cloud_p
 	
 	line = infile.readline().split()
 	nz,ngroup,nelem,nbin,ngas,nstep,iskip = map(int,line)
-      
+	  
 	# Do a quick check to see if ngroup matches the cloud dict loaded
 	print('Checking input file matches expected groups')
 	print(f'ngroup from input file: {ngroup}, group properties for: {len(group_name_list)}')
@@ -299,14 +305,14 @@ def read_in_for_2DCARMA(infile_path,longitudes_path,outfile_loc,run_name,cloud_p
 					temporal_svp_cloud_element_dict[cloud_element][k,long_index,i] *= pressure_array[k]*pressure_to_bar**2
 
 	print('Finally Read-in complete\n')
-      
+	  
 	########################################################
 	# Save the full data to compressed npz
 
 	print('Begining saving data')
 
 	dicts_to_save_dict = {'temporal_global_cloud_properties': temporal_global_cloud_dict,
-					      'temporal_mmr_cloud_element_properties':  temporal_mmr_cloud_element_dict,
+						  'temporal_mmr_cloud_element_properties':  temporal_mmr_cloud_element_dict,
 						  'temporal_svp_cloud_element_properties':  temporal_svp_cloud_element_dict,
 					   }
 	

@@ -1,0 +1,23 @@
+# File which contains all the names for the individual files that need read in
+# Means only this file name needs to be passed rather than all the different
+# file names to all the functions
+
+! infile_loc
+/Volumes/project/diana8/dsamra/WASP-52b_clear_run1 # path don't end in /, because this is added later
+/Volumes/project/diana8/dsamra/WASP-52b_clear_run2
+/Volumes/project/diana8/dsamra/WASP-52b_clear_run3
+/Volumes/project/diana8/dsamra/WASP-52b_clear_run4
+/Volumes/project/diana8/dsamra/WASP-52b_clear_run5
+/Volumes/project/diana8/dsamra/WASP-52b_clear_run6
+
+! infile_name
+WASP-52b_clear_1xsolar_1Kzz # file must end in .txt
+
+! longitudes_loc
+/Users/dominicsamra/Documents
+
+! longitudes_name
+longitudes_WASP-52b_clear_1xsolar # file must end in .txt
+
+! outfile_loc
+./test/output
