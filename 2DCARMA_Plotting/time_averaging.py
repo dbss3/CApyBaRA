@@ -14,6 +14,7 @@ def do_time_averaging(loaded_dicts_list,outfile_loc,run_name):
     longitudes_array = axis_arrays_dict['longitudes_array']
     r_array = axis_arrays_dict['r_array']
     longitude_count_array = axis_arrays_dict['longitude_count_array']
+    time_array = axis_arrays_dict['time_array']
 
     print('Longitude count array:',longitude_count_array)
 
@@ -55,7 +56,7 @@ def do_time_averaging(loaded_dicts_list,outfile_loc,run_name):
 
     saved_time_averaged_dict_paths_list = []
     for name, dict in dicts_to_save_dict.items():
-        saved_dict_path = output_dictionary_to_compressed_npzfile(pressure_array,longitudes_array,r_array,longitude_count_array,
+        saved_dict_path = output_dictionary_to_compressed_npzfile(pressure_array,longitudes_array,r_array,longitude_count_array,time_array,
                                 dict,name,outfile_loc,run_name)
         saved_time_averaged_dict_paths_list.append(saved_dict_path)
 
