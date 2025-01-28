@@ -59,7 +59,7 @@ def main():
         longitudes_path = check_for_inpath(file_locs_and_names_dict,'longitudes')
 
         # OK finally do the read in
-        if type(infile_path) == 'str':
+        if type(infile_path) == str:
             saved_dict_paths_list = read_in_for_2DCARMA(infile_path,longitudes_path,outfile_loc,run_name,\
                                                         cloud_properties_file_path,cloud_materials_file_path)
         else: # assume list of infile_paths

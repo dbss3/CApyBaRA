@@ -16,7 +16,6 @@ def check_for_inpath(file_locs_and_names_dict,file_str):
 
     if f'{file_str}_name' in file_locs_and_names_dict:
         name = file_locs_and_names_dict[f'{file_str}_name']
-
     else:
         print(f'No {file_str}_name for read in provided,')
 

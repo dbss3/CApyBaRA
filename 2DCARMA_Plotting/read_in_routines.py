@@ -41,6 +41,7 @@ def read_file_to_dict(file_path):
 			print(f'Error: key {key} has no specified value')
 			quit()
 		elif len(value) == 1: #only one entry so setting to string
+			print(value[0])
 			file_locs_and_names_dict[key] = value[0]
 		else:
 			#leaving list
