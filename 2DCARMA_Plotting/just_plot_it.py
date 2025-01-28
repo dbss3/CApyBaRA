@@ -59,8 +59,20 @@ def main():
         longitudes_path = check_for_inpath(file_locs_and_names_dict,'longitudes')
 
         # OK finally do the read in
-        saved_dict_paths_list = read_in_for_2DCARMA(infile_path,longitudes_path,outfile_loc,run_name,\
-                                                cloud_properties_file_path,cloud_materials_file_path)
+        if type(infile_path) == 'str':
+            saved_dict_paths_list = read_in_for_2DCARMA(infile_path,longitudes_path,outfile_loc,run_name,\
+                                                        cloud_properties_file_path,cloud_materials_file_path)
+        else: # assume list of infile_paths
+            infile_path_list = infile_path
+            saved_dict_paths_list = []
+            for infile_path in infile_path_list:
+                saved_dict_paths = read_in_for_2DCARMA(infile_path,longitudes_path,outfile_loc,run_name,\
+                                                        cloud_properties_file_path,cloud_materials_file_path)
+                saved_dict_paths_list.append(saved_dict_paths)
+
+                # COMPILATOR: NEED FUNCTION HERE TO TURN THESE MULTIPLE 
+                # SAVED DICTS INTO A SINGLE ONE, SO THE REST OF THE SCRIPT
+                # IS UNCHANGED
 
         print('Option 1 end\n')
 
