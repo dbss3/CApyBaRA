@@ -242,17 +242,22 @@ def read_in_for_2DCARMA(infile_path,longitudes_path,outfile_loc,run_name,cloud_p
 	# Now we get onto blocks that are for each time-step
 	# Each time there is a line which describes the time-step first
 	for i in range(ntime-1):
+		timestep_details = infile.readline().split()
+		print(timestep_details)
+		if len(timestep_details) == 0:
+			print('looks like this run did not complete,')
+			print(f'ending read-in at i = {i}, expected: {ntime}\n')
+			break
 		if i == 0:
 			# For some reason the first one just has the first time-step time
 			# If the file is from an OG run, this will just be 0
 			# If its a restart it should be whatever that start time is?
-			time_array[i] = float(infile.readline())
+			time_array[i] = float(timestep_details[0])
 			long_index = 0
 		else:
 			# Otherwise there are three values, for the timestep.
 			# The time, the distance?, and the rotation?
 			# So not each timestep is at the same longitude!!!
-			timestep_details  = infile.readline().split()
 			time_array[i] = float(timestep_details[0])
 			distance_array[i] = float(timestep_details[1])
 			rotation_array[i] = float(timestep_details[2])
@@ -261,9 +266,11 @@ def read_in_for_2DCARMA(infile_path,longitudes_path,outfile_loc,run_name,cloud_p
 				long_index = 0
 			else:
 				long_index = int(round(current_longitude,0))
-
+		
+		print('iteration: ',i)
 		print('reading time:',time_array[i])
 		print('longitude:',long_index)
+		print('')
 
 		# Saving number of instances of each longitude to an array for time average calc
 		longitude_count_array[long_index] +=1
