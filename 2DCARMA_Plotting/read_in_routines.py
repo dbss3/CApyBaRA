@@ -241,7 +241,7 @@ def read_in_for_2DCARMA(infile_path,longitudes_path,outfile_loc,run_name,cloud_p
 	########################################################
 	# Now we get onto blocks that are for each time-step
 	# Each time there is a line which describes the time-step first
-	for i in range(ntime-1):
+	for i in range(ntime):
 		end_time_step = i
 		timestep_details = infile.readline().split()
 		print(timestep_details)
@@ -319,10 +319,12 @@ def read_in_for_2DCARMA(infile_path,longitudes_path,outfile_loc,run_name,cloud_p
 
 	print('Finally Read-in complete\n')
 
+	print(time_array)
+
 	# Need to trim down all the time arrays to the correct size,
 	# Doesn't affect time averaging, but it will make combining them neater
-	if end_time_step != ntime-1:
-		print('Triming arrays as incomplete run')
+	if end_time_step != ntime:
+		print('Triming arrays as incomplete run, endtime = ', end_time_step)
 		print('Total number of read in times: ',np.sum(longitude_count_array))
 		print('Expected number of times to read in: ', ntime)
 
@@ -362,7 +364,7 @@ def read_in_for_2DCARMA(infile_path,longitudes_path,outfile_loc,run_name,cloud_p
 	saved_dict_paths_list = []
 	for dict_name, dict in dicts_to_save_dict.items():
 		print(f'saving: {dict_name}')
-		saved_dict_path = output_dictionary_to_compressed_npzfile(pressure_array,longitudes_array,r_array,longitude_count_array,
+		saved_dict_path = output_dictionary_to_compressed_npzfile(pressure_array,longitudes_array,r_array,longitude_count_array,time_array,
 								dict,dict_name,outfile_loc,run_name)
 		saved_dict_paths_list.append(saved_dict_path)
 		print('saved\n')
